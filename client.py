@@ -1,11 +1,11 @@
 from gladier import GladierBaseClient
 class KanzusClient(GladierBaseClient):
-    client_id = 'e6c75d97-532a-4c88-b031-8584a319fa3e'
     gladier_tools = [
-
     ]
     flow_definition = ##TODO change that to the original flow ryan was using
 ##
+
+
 
 ##Arg Parsing
 def parse_args():
@@ -31,3 +31,11 @@ if __name__ == '__main__':
     # else:
     #     corr_flow = corr_cli.run_flow(flow_input=flow_input)
     #     corr_cli.check_flow(corr_flow['action_id'])
+
+
+    buckets = ['/net/data/idsbc/idstaff/S8/nsp10nsp16/A/Akaroa5_6_00256.cbf',
+               '/net/data/idsbc/idstaff/S8/nsp10nsp16/A/Akaroa5_6_00512.cbf',
+               '/net/data/idsbc/idstaff/S8/nsp10nsp16/A/Akaroa5_6_00768.cbf']
+    res = create_flow_input(buckets)
+    from pprint import pprint
+    pprint(res)
