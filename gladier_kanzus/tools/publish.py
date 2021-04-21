@@ -25,7 +25,7 @@ def ssx_pilot(data):
 
     exp_name = data['chip']
     exp_num = data['experiment_number']
-    run_dir = data['run_dir']
+    run_dir = os.path.dirname(data['trigger_name'])
     # Ex: /projects/APSDataAnalysis/SSX/S8/nsp10nsp16/A/Akaroa5_processing
     proc_dir = os.path.join(run_dir, f'{exp_name}_processing')
     assert os.path.exists(run_dir), f'"input_files" dir does not exist: {run_dir}'
