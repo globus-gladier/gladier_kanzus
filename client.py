@@ -1,4 +1,6 @@
 from gladier import GladierBaseClient
+
+
 class KanzusClient(GladierBaseClient):
     gladier_tools = [
     ]
