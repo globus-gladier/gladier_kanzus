@@ -6,3 +6,4 @@ crash.log
 
 # For built boxes
 *.box
+tools/__pycache__/dials_stills.cpython-38.pyc

@@ -26,7 +26,7 @@ flow_definition = {
       "Parameters": {
           "tasks": [{
             "endpoint.$": "$.input.funcx_ep",
-            "func.$": "$.input.funcx_stills_process_funcx_id",
+            "func.$": "$.input.stills_cont_fxid",
             "payload.$": "$.input"
         }]
       },

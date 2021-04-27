@@ -17,6 +17,14 @@ class KanzusPhilsClient(GladierBaseClient):
 
 phils_client = KanzusPhilsClient()
 
+##hacking over container
+from tools.dials_stills import funcx_stills_process as stills_cont
+'cont_dir': '/home/rvescovi/.funcx/containers/'}
+container_name = "dials_v1.simg"
+dials_cont_id = fxc.register_container(location=os.path.join(conf['cont_dir'],container_name), container_type='singularity')
+stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
+##
+
 ##
 conf = {'endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
         'local_endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
@@ -42,6 +50,9 @@ flow_input = {
         # funcX endpoints
         "funcx_ep": conf['endpoint'],
         "funcx_local_ep": conf['local_endpoint'],
+
+        # container hack for stills
+        "stills_cont_fxid": stills_cont_fxid
     }
 }
 ##
