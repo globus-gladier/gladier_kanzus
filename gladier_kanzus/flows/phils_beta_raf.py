@@ -9,7 +9,7 @@ flow_definition = {
       "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
       "Parameters": {
           "tasks": [{
-            "endpoint.$": "$.input.funcx_ep",
+            "endpoint.$": "$.input.funcx_local_ep",
             "func.$": "$.input.funcx_create_phil_funcx_id",
             "payload.$": "$.input"
         }]
@@ -25,13 +25,13 @@ flow_definition = {
       "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
       "Parameters": {
           "tasks": [{
-            "endpoint.$": "$.input.funcx_ep",
+            "endpoint.$": "$.input.funcx_queue_ep",
             "func.$": "$.input.stills_cont_fxid",
             "payload.$": "$.input"
         }]
       },
-      "ResultPath": "$.Exec5Result",
-      "WaitTime": 600,
+      "ResultPath": "$.Exec2Result",
+      "WaitTime": 7200,
       "End": True
     }
   }

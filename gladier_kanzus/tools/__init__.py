@@ -52,7 +52,7 @@ class SSXPublish(GladierBaseTool):
     ]
 
 
-class SSXGatherData(GladierDefaults):
+class SSXGatherData(GladierBaseTool):
 
     flow_definition = {
       'Comment': 'Gather port-dials data for plot generation and upload',
@@ -98,7 +98,7 @@ class SSXGatherData(GladierDefaults):
     ]
 
 
-class SSXPlot(GladierDefaults):
+class SSXPlot(GladierBaseTool):
 
     flow_definition = {
       'Comment': 'Plot SSX data',
@@ -133,7 +133,7 @@ class SSXPlot(GladierDefaults):
     ]
 
 
-class SSXPublish(GladierDefaults):
+class SSXPublish(GladierBaseTool):
 
     flow_definition = {
       'Comment': 'Run Pilot and upload the result to search + petreldata',
