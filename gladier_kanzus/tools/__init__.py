@@ -7,8 +7,9 @@ from .dials_stills import funcx_stills_process
 from .plot import ssx_plot
 from .publish import ssx_publish
 from .gather_data import ssx_gather_data
+from .xy_search import xy_search
 
-__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot','SSXPublish']
+__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot','SSXPublish', 'XYSearch']
 
 
 class CreatePhil(GladierBaseTool):
@@ -49,6 +50,14 @@ class SSXPublish(GladierBaseTool):
     # funcx_endpoints = dict()
     funcx_functions = [
         ssx_publish
+    ]
+
+class XYSearch(GladierBaseTool):
+    flow_definition = None
+    required_input = []
+    # funcx_endpoints = dict()
+    funcx_functions = [
+        xy_search
     ]
 
 
