@@ -1,9 +1,54 @@
 from gladier import GladierBaseClient
+
+
 class KanzusClient(GladierBaseClient):
     gladier_tools = [
     ]
     flow_definition = ##TODO change that to the original flow ryan was using
 ##
+
+from watchdog.observers import Observer
+from watchdog.events import LoggingEventHandler
+
+class KanzusTriggers:
+    def __init__(self, folder_path):
+        self.observer = Observer()
+        self.folder_path = folder_path 
+
+    def run(self):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, self.watchDirectory, recursive = True)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(5)
+        except:
+            self.observer.stop()
+            print("Kanzus Triggers Stopped")
+  
+        self.observer.join()
+
+class Handler:(FileSystemEventHandler):
+    @staticmethod
+    def on_any_event(event):
+        if event.is_directory:
+            return None
+        elif event.event_type == 'created':
+
+            #event.src_path is the file watchdog found
+            # Event is created, you can process it now
+            KanzusLogic(event.src_path,f_pattern=None,f_ext=None, n_batch=256)
+  
+
+def KanzusLogic(cbf_file,f_pattern=None,f_ext=None, n_batch=256):
+        print(cbf_file)
+
+        ##cbf is created
+        ##n_batch runs plot
+        ##cbf name  %n_batch==0
+        ## 
+
+
 
 
 

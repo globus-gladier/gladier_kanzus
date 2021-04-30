@@ -5,9 +5,12 @@ def funcx_create_phil(data):
     from string import Template
 
     proc_dir = data['proc_dir']
-    data_dir = os.path.split(data['input_files'])[0]
-    run_num = data['input_files'].split("_")[-2]
+    data_dir = data['data_dir']
+    run_num = data['input_files'].split("_")[-2] ##this is pretty weird
     
+    if not os.path.exists(proc_dir):
+        os.makedirs(proc_dir)
+        
     
     if 'suffix' in data:
         phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
@@ -72,9 +75,7 @@ indexing {
 }""")
     phil_data = template_phil.substitute(template_data)
 
-    if not os.path.exists(proc_dir):
-        os.mkdir(proc_dir)
-        
+
     with open(phil_name, 'w') as fp:
         fp.write(phil_data)
     return phil_name
