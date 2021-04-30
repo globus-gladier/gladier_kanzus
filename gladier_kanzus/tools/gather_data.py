@@ -25,6 +25,11 @@ def ssx_gather_data(data):
 
     # Get processing and image dirs
     run_dir = os.path.dirname(trigger_name)
+
+    # Check it exists in case xy search didn't create this one
+    if not os.path.exists(processing_dir):
+        os.mkdir(processing_dir)
+
     beamline_file = os.path.join(run_dir, f'beamline_run{exp_number}.json')
     if not os.path.exists(upload_dir):
         os.mkdir(upload_dir)
@@ -47,6 +52,10 @@ def ssx_gather_data(data):
             if cbf_match:
                 cbf_index = int(cbf_match.groups()[0])
                 cbf_indices.append(cbf_index)
+    
+    if len(cbf_indices) == 0:
+        cbf_indices.append(0)
+    
     batch_info = {
         'cbf_files': len(cbf_indices),
         'cbf_file_range': {'from': min(cbf_indices), 'to': max(cbf_indices)},
