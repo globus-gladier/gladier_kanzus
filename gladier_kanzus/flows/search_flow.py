@@ -43,7 +43,13 @@ flow_definition = {
       "Type": "Action",
       "ActionUrl": "https://api.funcx.org/automate",
       "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
-      "InputPath": "$.input",
+      "Parameters": {
+          "tasks": [{
+            "endpoint.$": "$.input.funcx_local_ep",
+            "func.$": "$.input.xy_plot_funcx_id",
+            "payload.$": "$.input"
+        }]
+      },
       "ResultPath": "$.Exec4Result",
       "WaitTime": 600,
       "End": True
