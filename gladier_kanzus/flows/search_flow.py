@@ -36,6 +36,16 @@ flow_definition = {
       "InputPath": "$.Exec1Result.details.result.stills",
       "ResultPath": "$.Exec2Result",
       "WaitTime": 3600,
+      "Next": "plot_search"
+    },
+    "plot_search": {
+      "Comment": "Plot the search results",
+      "Type": "Action",
+      "ActionUrl": "https://api.funcx.org/automate",
+      "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
+      "InputPath": "$.input",
+      "ResultPath": "$.Exec4Result",
+      "WaitTime": 600,
       "End": True
     }
   }

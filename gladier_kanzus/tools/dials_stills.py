@@ -10,8 +10,6 @@ def funcx_stills_process(data):
     input_files = data['input_files']
     run_num = data['input_files'].split("_")[-2]
     
-    os.chdir(proc_dir)
-    
     if 'suffix' in data:
         phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
     else:
@@ -23,10 +21,10 @@ def funcx_stills_process(data):
         data["timeout"] = 0
 
     dials_path = data.get('dials_path','')
-    cmd = f'source {dials_path}/dials_env.sh && dials.stills_process {phil_name} {datadir}/{input_files} > log-{file_end}.txt'
+    cmd = f'source {dials_path}/dials_env.sh && dials.stills_process {phil_name} {data_dir}/{input_files} > log-{file_end}.txt'
 
     
-    os.chdir(data_dir) ##Need to guarantee the worker is at the correct location..
+    os.chdir(proc_dir) ##Need to guarantee the worker is at the correct location..
     res = subprocess.run(cmd, stdout=PIPE, stderr=PIPE,
                              shell=True, executable='/bin/bash')
     
