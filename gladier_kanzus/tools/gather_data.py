@@ -7,6 +7,9 @@ def ssx_gather_data(data):
     import shutil
     from zipfile import ZipFile
     trigger_name = data['trigger_name']
+    processing_dir = data['proc_dir']
+    upload_dir = data['upload_dir']
+
     sample_metadata = trigger_name.split('/')[-4:]
     assert len(sample_metadata) == 4 and trigger_name.endswith('cbf'), (
         'Invalid sample path, must run with end path resembling: "S9/nsp10nsp16/K/Kaleidoscope_15_22016.cbf"'
@@ -22,9 +25,6 @@ def ssx_gather_data(data):
 
     # Get processing and image dirs
     run_dir = os.path.dirname(trigger_name)
-    # processing_dir = os.path.join(run_dir, f'{exp_name}_processing')
-    processing_dir = run_dir
-    upload_dir = os.path.join(run_dir, f'{exp_name}_images')
     beamline_file = os.path.join(run_dir, f'beamline_run{exp_number}.json')
     if not os.path.exists(upload_dir):
         os.mkdir(upload_dir)

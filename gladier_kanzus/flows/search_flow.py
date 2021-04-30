@@ -52,6 +52,38 @@ flow_definition = {
       },
       "ResultPath": "$.Exec4Result",
       "WaitTime": 600,
+      "Next": "gather_data"
+    },
+    "gather_data": {
+      "Comment": "Gather data to publish",
+      "Type": "Action",
+      "ActionUrl": "https://api.funcx.org/automate",
+      "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
+      "Parameters": {
+          "tasks": [{
+            "endpoint.$": "$.input.funcx_local_ep",
+            "func.$": "$.input.ssx_gather_data_funcx_id",
+            "payload.$": "$.input"
+        }]
+      },
+      "ResultPath": "$.Exec5Result",
+      "WaitTime": 600,
+      "Next": "publish"
+    },
+    "publish": {
+      "Comment": "Publish results to the portal",
+      "Type": "Action",
+      "ActionUrl": "https://api.funcx.org/automate",
+      "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
+      "Parameters": {
+          "tasks": [{
+            "endpoint.$": "$.input.funcx_local_ep",
+            "func.$": "$.input.funcx_pilot_funcx_id",
+            "payload.$": "$.input"
+        }]
+      },
+      "ResultPath": "$.Exec5Result",
+      "WaitTime": 600,
       "End": True
     }
   }

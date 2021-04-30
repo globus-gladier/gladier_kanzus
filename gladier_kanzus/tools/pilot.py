@@ -22,14 +22,14 @@ def funcx_pilot(data):
 
     exp_name = data['metadata']['chip']
     exp_num = data['metadata']['experiment_number']
+    proc_dir = data['proc_dir']
+    upload_dir = data['upload_dir']
     run_dir = os.path.dirname(data['input_files'])
     # Ex: /projects/APSDataAnalysis/SSX/S8/nsp10nsp16/A/Akaroa5_processing
-    proc_dir = os.path.join(run_dir, f'{exp_name}_processing')
+    # proc_dir = os.path.join(run_dir, f'{exp_name}_processing')
     assert os.path.exists(run_dir), f'"input_files" dir does not exist: {run_dir}'
     assert os.path.exists(proc_dir), f'processing dir does not exist: {proc_dir}'
 
-    # Ex: /projects/APSDataAnalysis/SSX/S8/nsp10nsp16/A/Akaroa5_images
-    image_dir = os.path.join(run_dir, f'{exp_name}_images')
     # Ex: /projects/APSDataAnalysis/SSX/S8/nsp10nsp16/A/beamline_run6.json
     beamline_file = os.path.join(run_dir, f'beamline_run{exp_num}.json')
 
@@ -76,8 +76,8 @@ def funcx_pilot(data):
     # Set this to the local Globus Endpoint
     local_endpoint = pargs.get('local_endpoint', '08925f04-569f-11e7-bef8-22000b9a448b')
     pc.profile.save_option('local_endpoint', local_endpoint)
-    assert image_dir.endswith('_images'), f'Filename {image_dir} DOES NOT appear to be correct'
-    result = pc.upload(image_dir, '/', metadata=data['metadata'], update=True, skip_analysis=True,
+    assert upload_dir.endswith('_images'), f'Filename {upload_dir} DOES NOT appear to be correct'
+    result = pc.upload(upload_dir, '/', metadata=data['metadata'], update=True, skip_analysis=True,
                      dry_run=pargs.get('dry_run', False))
     # For some reason, these cause problems. Delete them before returning.
     del result['previous_metadata']

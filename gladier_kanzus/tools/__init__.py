@@ -9,8 +9,10 @@ from .publish import ssx_publish
 from .gather_data import ssx_gather_data
 from .xy_search import xy_search
 from .xy_plot import xy_plot
+from .pilot import funcx_pilot
 
-__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot','SSXPublish', 'XYSearch', 'XYPlot']
+__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot',
+           'SSXPublish', 'XYSearch', 'XYPlot', 'Pilot']
 
 
 class CreatePhil(GladierBaseTool):
@@ -67,6 +69,14 @@ class XYPlot(GladierBaseTool):
     # funcx_endpoints = dict()
     funcx_functions = [
         xy_plot
+    ]
+
+class Pilot(GladierBaseTool):
+    flow_definition = None
+    required_input = []
+    # funcx_endpoints = dict()
+    funcx_functions = [
+        funcx_pilot
     ]
 
 
