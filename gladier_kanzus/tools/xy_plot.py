@@ -10,6 +10,9 @@ def xy_plot(data):
     upload_dir = data.get('upload_dir', '')
     os.chdir(data_dir)
 
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+
     dirs = glob.glob('xy-*')
 
     data = {'X': [], 'Y': [], 'Ints': []}
