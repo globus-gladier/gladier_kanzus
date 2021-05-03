@@ -1,4 +1,4 @@
-import time, argparse
+import time, argparse, os
 from pprint import pprint
 import numpy as np
 from watchdog.observers import Observer
@@ -109,6 +109,17 @@ if __name__ == '__main__':
     proc_range_ends = 10109
     proc_range_delta = 256
 
+    ##hacking over container
+    from funcx.sdk.client import FuncXClient
+    fxc = FuncXClient()
+    from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
+    cont_dir =  '/home/rvescovi/.funcx/containers/'
+    container_name = "dials_v1.simg"
+    dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
+    stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
+    ##
+
+
     for p_range in create_ranges(proc_range_start,proc_range_ends,proc_range_delta):
         flow_input = {
             "input": {
@@ -133,15 +144,6 @@ if __name__ == '__main__':
         }
 
 
-    ##hacking over container
-    from funcx.sdk.client import FuncXClient
-    fxc = FuncXClient()
-    from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
-    cont_dir =  '/home/rvescovi/.funcx/containers/'
-    container_name = "dials_v1.simg"
-    dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
-    stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
-    ##
 
 
 
