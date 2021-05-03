@@ -29,27 +29,31 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
-        print('event debug')
         if event.is_directory:
             return None
         elif event.event_type == 'created':
-
             #event.src_path is the file watchdog found
             # Event is created, you can process it now
             KanzusLogic(event.src_path,f_pattern=None,f_ext=None, n_batch=256)
-  
 
-def KanzusLogic(cbf_file,f_pattern=None,f_ext=None, n_batch=256):
+
+def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
-        f_pattern = r'(\w+)_(\w+)_(\d+)_(\d+).cbf'
-    cbf_parse = re.compile(f_pattern)
-    cbf_parse(cbf_file)
-    print(cbf_file, cbf_parse)
+        f_pattern = r'(\w+)_(\d+)_(\d+).cbf'
+    cbf_path = os.path.dirname(event_file)
+    cbf_file = os.path.basename(event_file)
+    cbf_parse = re.match(f_pattern, cbf_file)
+    cbf_num =int(cbf_parse.group(3))
+    print(cbf_file)
+    print(cbf_num)
 
-        ##cbf is created
-        ##n_batch runs plot
-        ##cbf name  %n_batch==0
-        ## 
+    file_delta = 20
+    range_delta = file_delta
+
+    if cbf_num%file_delta==0:
+        subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
+        new_range = subranges[0]
+        print(new_range)
 
 
 
