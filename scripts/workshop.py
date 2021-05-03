@@ -1,4 +1,4 @@
-import time, argparse, os
+import time, argparse, os, re
 from pprint import pprint
 import numpy as np
 from watchdog.observers import Observer
