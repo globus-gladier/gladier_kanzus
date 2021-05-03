@@ -10,7 +10,8 @@ from .gather_data import ssx_gather_data
 from .xy_search import xy_search
 from .xy_plot import xy_plot
 
-__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot','SSXPublish', 'XYSearch', 'XYPlot']
+__all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot',
+           'SSXPublish', 'XYSearch', 'XYPlot']
 
 
 class CreatePhil(GladierBaseTool):

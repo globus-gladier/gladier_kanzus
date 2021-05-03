@@ -52,6 +52,42 @@ flow_definition = {
       },
       "ResultPath": "$.Exec4Result",
       "WaitTime": 600,
+      "Next": "gather_data"
+    },
+    "gather_data": {
+      "Comment": "Gather data to publish",
+      "Type": "Action",
+      "ActionUrl": "https://api.funcx.org/automate",
+      "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
+      "Parameters": {
+          "tasks": [{
+            "endpoint.$": "$.input.funcx_local_ep",
+            "func.$": "$.input.ssx_gather_data_funcx_id",
+            "payload.$": "$.input"
+        }]
+      },
+      "ResultPath": "$.SSXGatherData",
+      "WaitTime": 600,
+      "Next": "publish"
+    },
+    "publish": {
+      "Comment": "Publish results to the portal",
+      "Type": "Action",
+      "ActionUrl": "https://api.funcx.org/automate",
+      "ActionScope": "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all",
+      'Parameters': {
+            'tasks': [{
+            'endpoint.$': '$.input.funcx_local_ep',
+            'func.$': '$.input.ssx_publish_funcx_id',
+            'payload': {
+                'metadata.$': '$.SSXGatherData.details.result.metadata',
+                'upload_dir.$': '$.SSXGatherData.details.result.upload_dir',
+                'proc_dir.$': '$.input.proc_dir',
+            }
+        }]
+        },
+      "ResultPath": "$.PublishResult",
+      "WaitTime": 600,
       "End": True
     }
   }
