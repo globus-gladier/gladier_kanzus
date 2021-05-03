@@ -40,15 +40,12 @@ class Handler(FileSystemEventHandler):
 
 def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
-        f_pattern = r'(\w+)_(\d+).cbf'
+        f_pattern = r'(\w+_\d+_)(\d+).cbf'
     cbf_path = os.path.dirname(event_file)
     cbf_file = os.path.basename(event_file)
     cbf_parse = re.match(f_pattern, cbf_file)
-    cbf_base =int(cbf_parse.group(1))
+    cbf_base =cbf_parse.group(1)
     cbf_num =int(cbf_parse.group(2))
-    print(cbf_file)
-    print(cbf_base)
-    print(cbf_num)
 
     file_delta = 20
     range_delta = file_delta
@@ -56,7 +53,11 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if cbf_num%file_delta==0:
         subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
         new_range = subranges[0]
+        print(cbf_file)
+        print(cbf_base)
+        print(cbf_num)
         print(new_range)
+        print(base_input)
 
 
 
@@ -124,7 +125,7 @@ if __name__ == '__main__':
     
     stills_cont_fxid = register_container()
 
-
+    @global
     base_input = {
         "input": {
             #Processing variables
@@ -151,7 +152,7 @@ if __name__ == '__main__':
     # phils_flow = phils_client.start_flow(flow_input=flow_input)
 
 
-    exp = KanzusTriggers(workdir, base_input)
+    exp = KanzusTriggers(workdir)
     exp.run()
 
 
