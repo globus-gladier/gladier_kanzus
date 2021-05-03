@@ -12,6 +12,7 @@ class KanzusTriggers:
 
     def run(self):
         print("Kanzus Triggers Started")
+        print("Monitoring: {self.folder_path}")
 
         event_handler = Handler()
         self.observer.schedule(event_handler, self.folder_path, recursive = True)
@@ -28,6 +29,7 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
+        print('event debug')
         if event.is_directory:
             return None
         elif event.event_type == 'created':
@@ -39,7 +41,7 @@ class Handler(FileSystemEventHandler):
 
 def KanzusLogic(cbf_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
-        f_pattern = r'(\w+)_(\d+)_\d+.cbf'
+        f_pattern = r'(\w+)_(\w+)_(\d+)_(\d+).cbf'
     cbf_parse = re.compile(f_pattern)
     cbf_parse(cbf_file)
     print(cbf_file, cbf_parse)
@@ -89,6 +91,8 @@ if __name__ == '__main__':
     args = parse_args()
 
     workdir = args.workdir
+    print(workdir)
+    os.chdir(workdir)
 
     ##theta
     conf = {'local_endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
