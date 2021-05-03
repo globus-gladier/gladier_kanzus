@@ -40,12 +40,14 @@ class Handler(FileSystemEventHandler):
 
 def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
-        f_pattern = r'(\w+)_(\d+)_(\d+).cbf'
+        f_pattern = r'(\w+)_(\d+).cbf'
     cbf_path = os.path.dirname(event_file)
     cbf_file = os.path.basename(event_file)
     cbf_parse = re.match(f_pattern, cbf_file)
-    cbf_num =int(cbf_parse.group(3))
+    cbf_base =int(cbf_parse.group(1))
+    cbf_num =int(cbf_parse.group(2))
     print(cbf_file)
+    print(cbf_base)
     print(cbf_num)
 
     file_delta = 20
@@ -84,12 +86,23 @@ def create_ranges(start,end,delta):
         proc_range.append(f'{{{str(k_start).zfill(5)}..{str(k_end).zfill(5)}}}')
     return proc_range
 
+def register_container():
+    ##hacking over container
+    from funcx.sdk.client import FuncXClient
+    fxc = FuncXClient()
+    from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
+    cont_dir =  '/home/rvescovi/.funcx/containers/'
+    container_name = "dials_v1.simg"
+    dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
+    stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
+    return stills_cont_fxid
+    ##
+
 ##Arg Parsing
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('workdir', type=str, default='.')
     return parser.parse_args()
-
 
 if __name__ == '__main__':
 
@@ -103,49 +116,31 @@ if __name__ == '__main__':
     conf = {'local_endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
             'queue_endpoint': '23519765-ef2e-4df2-b125-e99de9154611',
             }
-    ##cooley
-    # conf = {'local_endpoint': '83e95e2e-fd70-45ea-9467-5efe5d95ff11',
-    #         'queue_endpoint': 'd26622fb-3bef-44df-8874-fcfdfbcc29fd',
-    #         }
 
+    ##theta dirs
     data_dir = '/eagle/APSDataAnalysis/SSX/S12/StTrpAB/B'
     proc_dir = data_dir
-    proc_range_start = 0
-    proc_range_ends = 10109
-    proc_range_delta = 256
-
-    ##hacking over container
-    from funcx.sdk.client import FuncXClient
-    fxc = FuncXClient()
-    from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
-    cont_dir =  '/home/rvescovi/.funcx/containers/'
-    container_name = "dials_v1.simg"
-    dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
-    stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
-    ##
+    
+    
+    stills_cont_fxid = register_container()
 
 
-    for p_range in create_ranges(proc_range_start,proc_range_ends,proc_range_delta):
-        flow_input = {
-            "input": {
-                #Processing variables
-                "proc_dir": proc_dir,
-                "data_dir": data_dir,
+    base_input = {
+        "input": {
+            #Processing variables
+            "proc_dir": proc_dir,
+            "data_dir": data_dir,
 
-                #Dials specific variables.
-                "input_files": f"Bounce_8_{p_range}.cbf", 
-                "input_range": p_range[1:-1],
-                "nproc": 16,
-                "beamx": "-214.400",
-                "beamy": "218.200",
+            "nproc": 16,
+            "beamx": "-214.400",
+            "beamy": "218.200",
 
-                # funcX endpoints
-                "funcx_local_ep": conf['local_endpoint'],
-                "funcx_queue_ep": conf['queue_endpoint'],
+            # funcX endpoints
+            "funcx_local_ep": conf['local_endpoint'],
+            "funcx_queue_ep": conf['queue_endpoint'],
 
-                # container hack for stills
-                "stills_cont_fxid": stills_cont_fxid
-            }
+            # container hack for stills
+            "stills_cont_fxid": stills_cont_fxid
         }
 
 
@@ -156,7 +151,7 @@ if __name__ == '__main__':
     # phils_flow = phils_client.start_flow(flow_input=flow_input)
 
 
-    exp = KanzusTriggers(workdir)
+    exp = KanzusTriggers(workdir, base_input)
     exp.run()
 
 
