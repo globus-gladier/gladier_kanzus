@@ -10,9 +10,10 @@ class KanzusTriggers:
         self.observer = Observer()
         self.folder_path = folder_path
 
-    def run(self):
+    def run(self,pattern=None):
         print("Kanzus Triggers Started")
-        print("Monitoring: {self.folder_path}")
+        print("Monitoring: " + self.folder_path)
+
 
         event_handler = Handler()
         self.observer.schedule(event_handler, self.folder_path, recursive = True)
@@ -23,7 +24,7 @@ class KanzusTriggers:
         except:
             self.observer.stop()
             print("Kanzus Triggers Stopped")
-  
+
         self.observer.join()
 
 class Handler(FileSystemEventHandler):
