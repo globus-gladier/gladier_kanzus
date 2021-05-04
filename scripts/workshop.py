@@ -53,10 +53,9 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if cbf_num%file_delta==0:
         subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
         new_range = subranges[0]
-        print(cbf_file)
-        print(cbf_base)
-        print(cbf_num)
-        print(new_range)
+        print('Flow was triggered!!')
+        base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
+        base_input["input"]["input_range"]=new_range[1:-1]
         print(base_input)
 
 
@@ -119,16 +118,20 @@ if __name__ == '__main__':
             }
 
     ##theta dirs
-    data_dir = '/eagle/APSDataAnalysis/SSX/S12/StTrpAB/B'
+    data_dir = '/eagle/APSDataAnalysis/SSX/workshop'
     proc_dir = data_dir
+
+    ##globus
+    beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
+    theta_ep='08925f04-569f-11e7-bef8-22000b9a448b'
     
-    
+
     stills_cont_fxid = register_container()
 
-    @global
     base_input = {
         "input": {
             #Processing variables
+            "local_dir": workdir,
             "proc_dir": proc_dir,
             "data_dir": data_dir,
 
@@ -140,10 +143,14 @@ if __name__ == '__main__':
             "funcx_local_ep": conf['local_endpoint'],
             "funcx_queue_ep": conf['queue_endpoint'],
 
+            # globus endpoints
+            "globus_local_ep": beamline_ep,
+            "globus_dest_ep": theta_ep, 
+
             # container hack for stills
             "stills_cont_fxid": stills_cont_fxid
         }
-
+    }
 
 
 
