@@ -56,13 +56,14 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
         print('Flow was triggered!!')
         base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
         base_input["input"]["input_range"]=new_range[1:-1]
-        print(base_input)
+        flow_input = base_input
+        print(flow_input)
+        # workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
+
 
 
 
 from gladier_kanzus.flows.tutorial_flow import flow_definition as kanzus_flow
-
-
 class KanzusSSXGladier(GladierBaseClient):
     client_id = 'e6c75d97-532a-4c88-b031-8584a319fa3e'
     gladier_tools = [
@@ -152,12 +153,7 @@ if __name__ == '__main__':
         }
     }
 
-
-
-
-    # pprint(flow_input['input'])
-    # phils_flow = phils_client.start_flow(flow_input=flow_input)
-
+    kanzus_workshop_client = KanzusSSXGladier()
 
     exp = KanzusTriggers(workdir)
     exp.run()

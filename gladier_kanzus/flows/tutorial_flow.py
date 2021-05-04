@@ -1,7 +1,27 @@
 flow_definition = {
-  "Comment": "Kanzus Phils Flow",
-  "StartAt": "Dials Create Phil",
+  "Comment": "Kanzus Tutorial Flow",
+  "StartAt": "Transfer",
   "States": {
+      "Transfer": {
+      "Comment": "Initial transfer",
+      "Type": "Action",
+      "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
+      "ActionScope": "https://auth.globus.org/scopes/actions.globus.org/transfer/transfer",
+      "Parameters": {
+        "source_endpoint_id.$": "$.input.globus_local_ep", 
+        "destination_endpoint_id.$": "$.input.globus_dest_ep",
+        "transfer_items": [
+          {
+            "source_path.$": "$.input.local_dir",
+            "destination_path.$": "$.input.data_dir",
+            "recursive": False
+          }
+        ]
+      },
+      "ResultPath": "$.Transfer1Result",
+      "WaitTime": 600,
+      "Next": "Dials Create Phil"
+    },
     "Dials Create Phil": {
       "Comment": "Create Dials Phil",
       "Type": "Action",
