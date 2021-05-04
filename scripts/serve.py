@@ -7,7 +7,9 @@ new_folder = '/ssx/O_new'
 delta = 0.1
 f_list = sorted(glob.glob(os.path.join(folder,'*.cbf')))
 
-os.makedirs(new_folder, exist_ok=True)
+#os.makedirs(new_folder, exist_ok=True)
+
+shutil.copytree('/ssx/std_files',new_folder,dirs_exist_ok=True)
 
 for kfile in f_list:
     time.sleep(delta)

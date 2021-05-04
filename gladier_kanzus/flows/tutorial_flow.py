@@ -14,7 +14,7 @@ flow_definition = {
           {
             "source_path.$": "$.input.local_dir",
             "destination_path.$": "$.input.data_dir",
-            "recursive": False
+            "recursive": True
           }
         ]
       },

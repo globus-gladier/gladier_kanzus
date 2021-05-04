@@ -12,6 +12,11 @@ class KanzusTriggers:
 
     def run(self,pattern=None):
         print("Kanzus Triggers Started")
+        if not os.path.isdir(self.folder_path):
+            print("Monitor dir does not exist.")
+            print("Dir " + self.folder_path + " was created")
+            os.mkdir(self.folder_path)
+            
         print("Monitoring: " + self.folder_path)
 
 
@@ -41,24 +46,26 @@ class Handler(FileSystemEventHandler):
 def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
         f_pattern = r'(\w+_\d+_)(\d+).cbf'
+
     cbf_path = os.path.dirname(event_file)
     cbf_file = os.path.basename(event_file)
     cbf_parse = re.match(f_pattern, cbf_file)
-    cbf_base =cbf_parse.group(1)
-    cbf_num =int(cbf_parse.group(2))
+    if cbf_parse is not None:
+        cbf_base =cbf_parse.group(1)
+        cbf_num =int(cbf_parse.group(2))
 
-    file_delta = 20
-    range_delta = file_delta
+        file_delta = 20
+        range_delta = file_delta
 
-    if cbf_num%file_delta==0:
-        subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
-        new_range = subranges[0]
-        print('Flow was triggered!!')
-        base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
-        base_input["input"]["input_range"]=new_range[1:-1]
-        flow_input = base_input
-        print(flow_input)
-        # workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
+        if cbf_num%file_delta==0:
+            subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
+            new_range = subranges[0]
+            print('Flow was triggered!!')
+            base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
+            base_input["input"]["input_range"]=new_range[1:-1]
+            flow_input = base_input
+            print(flow_input)
+            workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
 
 
 
@@ -110,17 +117,14 @@ if __name__ == '__main__':
     args = parse_args()
 
     workdir = args.workdir
-    print(workdir)
-    os.chdir(workdir)
-
     ##theta
     conf = {'local_endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
             'queue_endpoint': '23519765-ef2e-4df2-b125-e99de9154611',
             }
 
     ##theta dirs
-    data_dir = '/eagle/APSDataAnalysis/SSX/workshop'
-    proc_dir = data_dir
+    data_dir = '/eagle/APSDataAnalysis/SSX/workshop/O_test'
+    proc_dir = data_dir + '_proc'
 
     ##globus
     beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
