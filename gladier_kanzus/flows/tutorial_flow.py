@@ -42,7 +42,7 @@ flow_definition = {
           'ExceptionOnActionFailure': False,
           'Parameters': {
               'tasks': [{
-                'endpoint.$': '$.input.funcx_endpoint_non_compute',
+                "endpoint.$": "$.input.funcx_local_ep",
                 'func.$': '$.input.ssx_gather_data_funcx_id',
                 'payload.$': '$.input',
             }]
@@ -59,7 +59,7 @@ flow_definition = {
           'ExceptionOnActionFailure': False,
           'Parameters': {
               'tasks': [{
-                'endpoint.$': '$.input.funcx_endpoint_non_compute',
+                "endpoint.$": "$.input.funcx_local_ep",
                 'func.$': '$.input.ssx_plot_funcx_id',
                 'payload': {
                     'xdim.$': '$.SSXGatherData.details.result.metadata.user_input.x_num_steps',
@@ -81,7 +81,7 @@ flow_definition = {
               'ExceptionOnActionFailure': False,
               'Parameters': {
                   'tasks': [{
-                      'endpoint.$': '$.input.funcx_endpoint_non_compute',
+                      "endpoint.$": "$.input.funcx_local_ep",
                       'func.$': '$.input.ssx_publish_funcx_id',
                       'payload': {
                           'metadata.$': '$.SSXGatherData.details.result.metadata',
