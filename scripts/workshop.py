@@ -47,27 +47,34 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
     if not f_pattern:
         f_pattern = r'(\w+_\d+_)(\d+).cbf'
 
-    cbf_path = os.path.dirname(event_file)
     cbf_file = os.path.basename(event_file)
     cbf_parse = re.match(f_pattern, cbf_file)
     if cbf_parse is not None:
         cbf_base =cbf_parse.group(1)
         cbf_num =int(cbf_parse.group(2))
 
-        file_delta = 256
-        range_delta = file_delta
+        n_batch_transfer = 256
+        n_batch_plot = 1024
+        
+        range_delta = n_batch_transfer
 
-        if cbf_num%file_delta==0:
-            subranges = create_ranges(cbf_num-file_delta, cbf_num, range_delta)
+        if cbf_num%n_batch_transfer==0:
+            subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, range_delta)
             new_range = subranges[0]
-            print('Flow was triggered!!')
+            print('Transfer Flow')
             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
             base_input["input"]["input_range"]=new_range[1:-1]
+            base_input["input"]["trigger_name"]= os.path.join(
+                base_input["input"]["data_dir"], cbf_file
+            )
             flow_input = base_input
-            print(flow_input)
+            print("Range : " + base_input["input"]["input_range"])
+            #print(flow_input)
             workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
-            #print(workshop_flow)
+            print("UUID : " + workshop_flow['action_id'])
 
+        if cbf_num%n_batch_plot==0:
+            print('Plot Flow')
 
 
 from gladier_kanzus.flows.tutorial_flow import flow_definition as kanzus_flow
