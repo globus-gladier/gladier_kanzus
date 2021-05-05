@@ -18,7 +18,7 @@ class KanzusTriggers:
             os.mkdir(self.folder_path)
             
         print("Monitoring: " + self.folder_path)
-
+        print('')
 
         event_handler = Handler()
         self.observer.schedule(event_handler, self.folder_path, recursive = True)
@@ -68,14 +68,16 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
                 base_input["input"]["data_dir"], cbf_file
             )
             flow_input = base_input
-            print("Range : " + base_input["input"]["input_range"])
+            print("  Range : " + base_input["input"]["input_range"])
             #print(flow_input)
             workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
-            print("UUID : " + workshop_flow['action_id'])
+            print("  UUID : " + workshop_flow['action_id'])
+            print('')
 
         if cbf_num%n_batch_plot==0:
             print('Plot Flow')
-
+            print("  UUID : " + workshop_flow['action_id'])
+            print('')
 
 from gladier_kanzus.flows.tutorial_flow import flow_definition as kanzus_flow
 class KanzusSSXGladier(GladierBaseClient):
