@@ -119,33 +119,36 @@ def register_container():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('workdir', type=str, default='.')
+    parser.add_argument('datadir', type=str, 
+        default='/eagle/APSDataAnalysis/SSX/workshop/O_test')
     return parser.parse_args()
 
 if __name__ == '__main__':
 
     args = parse_args()
 
-    workdir = args.workdir
-    ##theta
-    conf = {'local_endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
-            'queue_endpoint': '23519765-ef2e-4df2-b125-e99de9154611',
-            }
-
-    ##theta dirs
-    data_dir = '/eagle/APSDataAnalysis/SSX/workshop/O_test'
-    proc_dir = data_dir + '_proc'
-    upload_dir = data_dir + '_upl' 
-    ##globus
+    ##parse dirs
+    work_dir = args.workdir
+    data_dir = args.datadir
+    
+    ##Process endpoints - theta
+    local_endpoint = '8f2f2eab-90d2-45ba-a771-b96e6d530cad'
+    queue_endpoint = '23519765-ef2e-4df2-b125-e99de9154611'
+    ##Transfer endpoints - 
     beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
     theta_ep='08925f04-569f-11e7-bef8-22000b9a448b'
     
+    
+    ##processing dirs
+    proc_dir = data_dir + '_proc'
+    upload_dir = data_dir + '_upl' 
 
-    stills_cont_fxid = register_container()
+    stills_cont_fxid = register_container() ##phase out with containers
 
     base_input = {
         "input": {
             #Processing variables
-            "local_dir": workdir,
+            "local_dir": work_dir,
             "data_dir": data_dir,
             "proc_dir": proc_dir,
             "upload_dir": upload_dir,
@@ -155,8 +158,8 @@ if __name__ == '__main__':
             "beamy": "218.200",
 
             # funcX endpoints
-            "funcx_local_ep": conf['local_endpoint'],
-            "funcx_queue_ep": conf['queue_endpoint'],
+            "funcx_local_ep": local_endpoint,
+            "funcx_queue_ep": queue_endpoint,
 
             # globus endpoints
             "globus_local_ep": beamline_ep,
@@ -169,7 +172,7 @@ if __name__ == '__main__':
 
     kanzus_workshop_client = KanzusSSXGladier()
 
-    exp = KanzusTriggers(workdir)
+    exp = KanzusTriggers(work_dir)
     exp.run()
 
 
