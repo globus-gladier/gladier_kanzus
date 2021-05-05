@@ -21,7 +21,7 @@ def funcx_stills_process(data):
         data["timeout"] = 0
 
     dials_path = data.get('dials_path','')
-    cmd = f'source {dials_path}/dials_env.sh && dials.stills_process {phil_name} {data_dir}/{input_files} > log-{file_end}.txt'
+    cmd = f'source {dials_path}/dials_env.sh && timeout 300 dials.stills_process {phil_name} {data_dir}/{input_files} > log-{file_end}.txt'
 
     
     os.chdir(proc_dir) ##Need to guarantee the worker is at the correct location..
