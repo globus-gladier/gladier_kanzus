@@ -40,15 +40,28 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             #event.src_path is the file watchdog found
             # Event is created, you can process it now
-            KanzusLogic(event.src_path,f_pattern=None,f_ext=None, n_batch=256)
+            KanzusLogic(event.src_path)
 
 
-def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
-    if not f_pattern:
-        f_pattern = r'(\w+_\d+_)(\d+).cbf'
+def KanzusLogic(event_file):
 
-    cbf_file = os.path.basename(event_file)
-    cbf_parse = re.match(f_pattern, cbf_file)
+    new_file = os.path.basename(event_file)
+
+    cbf_pattern = r'(\w+_\d+_)(\d+).cbf'
+    cbf_parse = re.match(cbf_pattern, new_file)
+
+    ##check if extra_args
+    extra_folder = event_file.replace(local_dir,'')
+    extra_folder = extra_folder.replace(new_file,'')
+    extra_folder = extra_folder.replace('/','')
+
+    ##processing dirs
+    data_dir = os.path.join(base_input["input"]["base_data_dir"], extra_folder)
+    base_input["input"]["local_dir"] = os.path.join(base_input["input"]["base_local_dir"], extra_folder)
+    base_input["input"]["data_dir"] = data_dir
+    base_input["input"]["proc_dir"] = data_dir + '_proc'
+    base_input["input"]["upload_dir"] = data_dir + '_images' 
+
     if cbf_parse is not None:
         cbf_base =cbf_parse.group(1)
         cbf_num =int(cbf_parse.group(2))
@@ -65,11 +78,11 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
             base_input["input"]["input_range"]=new_range[1:-1]
             base_input["input"]["trigger_name"]= os.path.join(
-                base_input["input"]["data_dir"], cbf_file
+                base_input["input"]["data_dir"], new_file
             )
             flow_input = base_input
-            print("  Range : " + base_input["input"]["input_range"])
-            #print(flow_input)
+            #print("  Range : " + base_input["input"]["input_range"])
+            print(flow_input)
             workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
             print("  UUID : " + workshop_flow['action_id'])
             print('')
@@ -118,9 +131,9 @@ def register_container():
 ##Arg Parsing
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('workdir', type=str, default='.')
+    parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
-        default='/eagle/APSDataAnalysis/SSX/workshop_raf')
+        default='/eagle/APSDataAnalysis/SSX/workshop_raf_v2')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -128,7 +141,7 @@ if __name__ == '__main__':
     args = parse_args()
 
     ##parse dirs
-    work_dir = args.workdir
+    local_dir = args.localdir
     data_dir = args.datadir
     
     ##Process endpoints - theta
@@ -137,21 +150,16 @@ if __name__ == '__main__':
     ##Transfer endpoints - 
     beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
     theta_ep='08925f04-569f-11e7-bef8-22000b9a448b'
+
     
-    
-    ##processing dirs
-    proc_dir = data_dir + '_proc'
-    upload_dir = data_dir + '_upl' 
 
     stills_cont_fxid = register_container() ##phase out with containers
 
     base_input = {
         "input": {
             #Processing variables
-            "local_dir": work_dir,
-            "data_dir": data_dir,
-            "proc_dir": proc_dir,
-            "upload_dir": upload_dir,
+            "base_local_dir": local_dir,
+            "base_data_dir": data_dir,
 
             "nproc": 64,
             "beamx": "-214.400",
@@ -172,7 +180,7 @@ if __name__ == '__main__':
 
     kanzus_workshop_client = KanzusSSXGladier()
 
-    exp = KanzusTriggers(work_dir)
+    exp = KanzusTriggers(local_dir)
     exp.run()
 
 

@@ -4,10 +4,8 @@ import shutil
 import time
 import argparse
 
-def create_experiment(sample_name, target_folder):
+def create_experiment(sample_name, exp_name, target_folder):
     
-    ##folowing beamline structure with first letter of sample name
-    exp_name = sample_name[0]
 
     f_path = os.path.join(target_folder,exp_name)
     
@@ -34,7 +32,9 @@ def serve_experiment(exp_path, serve_folder, std_folder, delta=0.1, n_files=2048
     print('')
     
 
-    for  _ , kfile in enumerate(f_list):
+    for f_num , kfile in enumerate(f_list):
+        if f_num==n_files:
+            return
         fname = os.path.basename(kfile)
         new_path = os.path.join(exp_path,fname)
         print(new_path)
@@ -46,6 +46,7 @@ def serve_experiment(exp_path, serve_folder, std_folder, delta=0.1, n_files=2048
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--samplename', type=str, default='Ohakune')
+    parser.add_argument('--expname', type=str, default='O')
     parser.add_argument('--workdir', type=str, default='/ssx/workshop/virtual_exp')
     parser.add_argument('--gpdfolder',type=str, default='/ssx/workshop/original_files/O')
     parser.add_argument('--stdfolder',type=str, default='/ssx/workshop/original_files/std_files')
@@ -57,6 +58,6 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    f_path = create_experiment(sample_name=args.samplename, target_folder=args.workdir)
+    f_path = create_experiment(sample_name=args.samplename, exp_name=args.expname, target_folder=args.workdir)
     
     serve_experiment(f_path, args.gpdfolder, args.stdfolder, delta=args.delta, n_files=args.n_files)
