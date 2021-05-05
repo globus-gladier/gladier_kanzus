@@ -119,8 +119,8 @@ def register_container():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('workdir', type=str, default='.')
-    parser.add_argument('datadir', type=str, 
-        default='/eagle/APSDataAnalysis/SSX/workshop/O_test')
+    parser.add_argument('--datadir', type=str, 
+        default='/eagle/APSDataAnalysis/SSX/workshop_raf')
     return parser.parse_args()
 
 if __name__ == '__main__':
