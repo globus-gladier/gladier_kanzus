@@ -54,7 +54,7 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
         cbf_base =cbf_parse.group(1)
         cbf_num =int(cbf_parse.group(2))
 
-        file_delta = 20
+        file_delta = 256
         range_delta = file_delta
 
         if cbf_num%file_delta==0:
@@ -66,7 +66,7 @@ def KanzusLogic(event_file,f_pattern=None,f_ext=None, n_batch=256):
             flow_input = base_input
             print(flow_input)
             workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
-
+            #print(workshop_flow)
 
 
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     ##theta dirs
     data_dir = '/eagle/APSDataAnalysis/SSX/workshop/O_test'
     proc_dir = data_dir + '_proc'
-
+    upload_dir = data_dir + '_upl' 
     ##globus
     beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
     theta_ep='08925f04-569f-11e7-bef8-22000b9a448b'
@@ -137,8 +137,9 @@ if __name__ == '__main__':
         "input": {
             #Processing variables
             "local_dir": workdir,
-            "proc_dir": proc_dir,
             "data_dir": data_dir,
+            "proc_dir": proc_dir,
+            "upload_dir": upload_dir,
 
             "nproc": 16,
             "beamx": "-214.400",
