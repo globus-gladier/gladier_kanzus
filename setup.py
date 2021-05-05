@@ -11,9 +11,9 @@ with open('requirements.txt') as reqs:
         install_requires.append(req)
 
 setup(
-    name='gladier_kanzus',
+    name='gladier-kanzus',
     description='The Kanzus Gladier',
-    url='https://github.com/globus-gladier/gladier_kanzus',
+    url='https://github.com/globus-gladier/gladier-kanzus',
     maintainer='The Gladier Team',
     maintainer_email='',
     version='0.0.2',

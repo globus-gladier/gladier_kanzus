@@ -1,1 +1,1 @@
-# kanzus_client
+# kanzus-client
