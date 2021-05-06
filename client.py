@@ -74,7 +74,7 @@ def KanzusLogic(event_file):
         if cbf_num%n_batch_transfer==0:
             subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, range_delta)
             new_range = subranges[0]
-            print('Transfer Flow')
+            print('Transfer+Stills Flow')
             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
             base_input["input"]["input_range"]=new_range[1:-1]
             base_input["input"]["trigger_name"]= os.path.join(
@@ -82,8 +82,10 @@ def KanzusLogic(event_file):
             )
             flow_input = base_input
             #print("  Range : " + base_input["input"]["input_range"])
-            print(flow_input)
+            #print(flow_input)
             workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
+            print("  Trigger : " + base_input["input"]["trigger_name"])
+            print("  Range : " + base_input["input"]["input_range"])
             print("  UUID : " + workshop_flow['action_id'])
             print('')
 
