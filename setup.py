@@ -19,8 +19,11 @@ setup(
     version='0.0.2',
     packages=find_packages(),
     install_requires=install_requires,
-    entry_points = {
-        'kanzus_ssx_Client': ['client=main']
+    entry_points={
+        'console_scripts': [
+            'kanzus_client = client:main',
+            'ssx_server = scripts/server:main',
+        ],
     },
     dependency_links=[],
     license='Apache 2.0',
