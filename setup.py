@@ -21,8 +21,8 @@ setup(
     install_requires=install_requires,
     entry_points={
         'console_scripts': [
-            'kanzus_client = client:main',
-            'ssx_server = scripts/server:main',
+            'kanzus_client = scripts:main',
+            #'ssx_server = scripts/server:main',
         ],
     },
     dependency_links=[],
