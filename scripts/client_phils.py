@@ -20,7 +20,7 @@ phils_client = KanzusPhilsClient()
 ##hacking over container
 from tools.dials_stills import funcx_stills_process as stills_cont
 'cont_dir': '/home/rvescovi/.funcx/containers/'}
-container_name = "dials_v1.simg"
+container_name = "dials_v3.simg"
 dials_cont_id = fxc.register_container(location=os.path.join(conf['cont_dir'],container_name), container_type='singularity')
 stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
 ##
@@ -33,7 +33,7 @@ conf = {'endpoint': '8f2f2eab-90d2-45ba-a771-b96e6d530cad',
         }
 
 run_name = '04_21_proc_v2'
-proc_range = "{00001..00050}"
+proc_range = "{00001..00500}"
 
 flow_input = {
     "input": {
@@ -41,7 +41,7 @@ flow_input = {
         "proc_dir": conf['proc_dir']+'/'+run_name,
 
         #Dials specific variables.
-        "input_files": f"{conf['data_dir']}/Arise_3_{proc_range}.cbf", 
+        "input_files": f"{conf['data_dir']}/Bounce_7_{proc_range}.cbf", 
         "input_range": proc_range[1:-1],
         "nproc": 10,
         "beamx": "-214.400",
