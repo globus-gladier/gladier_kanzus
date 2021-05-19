@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time, argparse, os, re
 from pprint import pprint
 import numpy as np
