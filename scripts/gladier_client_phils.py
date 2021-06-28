@@ -5,7 +5,7 @@ from pprint import pprint
 import numpy as np
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from gladier.client import GladierClient as GladierBaseClient
+from gladier import GladierBaseClient
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -96,7 +96,7 @@ def KanzusLogic(event_file):
             print("  UUID : " + workshop_flow['action_id'])
             print('')
 
-from gladier_kanzus.flows.tutorial_flow import flow_definition as kanzus_flow
+from gladier_kanzus.flows.phils_flow import flow_definition
 class KanzusSSXGladier(GladierBaseClient):
     client_id = 'e6c75d97-532a-4c88-b031-8584a319fa3e'
     gladier_tools = [
@@ -106,7 +106,7 @@ class KanzusSSXGladier(GladierBaseClient):
         'gladier_kanzus.tools.SSXPlot',
         'gladier_kanzus.tools.SSXPublish',
     ]
-    flow_definition = kanzus_flow
+    flow_definition = flow_definition
 
 def create_ranges(start,end,delta):
 
@@ -125,7 +125,7 @@ def register_container():
     from funcx.sdk.client import FuncXClient
     fxc = FuncXClient()
     from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
-    cont_dir =  '/home/rvescovi/.funcx/containers/'
+    cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
     container_name = "dials_v1.simg"
     dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
     stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
