@@ -6,7 +6,7 @@ import numpy as np
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from gladier import GladierBaseClient
-import gladier.tests
+#import gladier.tests
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -41,9 +41,12 @@ class Handler(FileSystemEventHandler):
         if event.is_directory:
             return None
 
-        elif event.event_type == 'created' or 'modified':
+        elif event.event_type == 'created':
             KanzusLogic(event.src_path)
-
+            return None
+        elif event.event_type == 'modified':
+            KanzusLogic(event.src_path)
+            return None
 
 def KanzusLogic(event_file):
 
