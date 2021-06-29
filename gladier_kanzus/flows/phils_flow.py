@@ -1,12 +1,11 @@
 flow_definition = {
-  "Comment": "Kanzus Flow",
+  "Comment": "Kanzus New Flow",
   "StartAt": "Transfer_Out",
   "States": {
       "Transfer_Out": {
       "Comment": "Initial transfer",
       "Type": "Action",
       "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
-      "ActionScope": "https://auth.globus.org/scopes/actions.globus.org/transfer/transfer",
       "Parameters": {
         "source_endpoint_id.$": "$.input.globus_local_ep", 
         "destination_endpoint_id.$": "$.input.globus_dest_ep",

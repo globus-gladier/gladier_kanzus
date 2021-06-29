@@ -6,6 +6,7 @@ import numpy as np
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from gladier import GladierBaseClient
+import gladier.tests
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -124,7 +125,7 @@ def register_container():
     from funcx.sdk.client import FuncXClient
     fxc = FuncXClient()
     from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
-    cont_dir =  '/APSDataAnalysis/SSX/containers/'
+    cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
     container_name = "dials_v1.simg"
     dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
     stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
@@ -150,10 +151,11 @@ if __name__ == '__main__':
     ##Process endpoints (theta - raf)
     head_funcx_ep      = '8f2f2eab-90d2-45ba-a771-b96e6d530cad'
     queue_funcx_ep     = '23519765-ef2e-4df2-b125-e99de9154611'
+        
     ##Transfer endpoints
-    beamline_globus_ep = 'a17155e6-b991-11eb-9d92-5f1f6f07872f'
+    beamline_globus_ep = '249bd870-d8f9-11eb-8134-bbca43030bb4'
     eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
-    
+    theta_globus_ep    = '08925f04-569f-11e7-bef8-22000b9a448b'
 
     stills_cont_fxid = register_container() ##phase out with containers
 
@@ -173,7 +175,8 @@ if __name__ == '__main__':
 
             # globus endpoints
             "globus_local_ep": beamline_globus_ep,
-            "globus_dest_ep": eagle_globus_ep, 
+#            "globus_dest_ep": eagle_globus_ep, 
+	    "globus_dest_ep": theta_globus_ep,
 
             # container hack for stills
             "stills_cont_fxid": stills_cont_fxid
