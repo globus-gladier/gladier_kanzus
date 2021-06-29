@@ -38,6 +38,7 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
+        print(event)
         if event.is_directory:
             return None
 
