@@ -14,53 +14,25 @@ __all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot',
 
 
 class CreatePhil(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        funcx_create_phil
-    ]
+    funcx_functions = [funcx_create_phil]
 
 class DialsStills(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        funcx_stills_process
-    ]
+    funcx_functions = [funcx_stills_process]
 
 class SSXGatherData(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        ssx_gather_data
-    ]
+    funcx_functions = [ssx_gather_data]
 
 class SSXPlot(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        ssx_plot
-    ]
+    funcx_functions = [ssx_plot]
 
 class SSXPublish(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        ssx_publish
-    ]
+    funcx_functions = [ssx_publish]
 
 class XYSearch(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        xy_search
-    ]
+    funcx_functions = [xy_search]
 
 class XYPlot(GladierBaseTool):
-    flow_definition = None
-    required_input = []
-    funcx_functions = [
-        xy_plot
-    ]
+    funcx_functions = [xy_plot]
 
 
 class SSXGatherData(GladierBaseTool):

@@ -72,6 +72,8 @@ def KanzusLogic(event_file):
         base_input["input"]["data_dir"] = data_dir
         base_input["input"]["proc_dir"] = data_dir + '_proc'
         base_input["input"]["upload_dir"] = data_dir + '_images' 
+        
+        base_input["trigger_name"] = os.path.join(data_dir,names[-1])
 
         n_batch_transfer = 128
        
@@ -83,7 +85,7 @@ def KanzusLogic(event_file):
              flow = kanzus_client.run_flow(flow_input=base_input)
 
              print('Transfer+Stills Flow')
-             print("  Trigger : " + event_file)
+             print("  Local Trigger : " + event_file)
              print("  Range : " + base_input["input"]["input_range"])
              print("  UUID : " + flow['action_id'])
              print('')
