@@ -38,7 +38,6 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
-        print(event)
         if event.is_directory:
             return None
 
@@ -49,8 +48,9 @@ class Handler(FileSystemEventHandler):
             KanzusLogic(event.src_path)
             return None
 
-def KanzusLogic(new_file):
+def KanzusLogic(event_file):
 
+    new_file = os.path.basename(event_file)
 
     cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf'
     cbf_parse = re.match(cbf_num_pattern, new_file)
@@ -60,47 +60,45 @@ def KanzusLogic(new_file):
         cbf_base =cbf_parse.group(1)
         cbf_num =int(cbf_parse.group(2))
 
-        rel_path = new_file.replace(local_dir,'')
+        rel_path = event_file.replace(base_input["input"]["base_local_dir"],'')
 
         names = rel_path.split('/')
-        print(names)
 
         # ##LOCAL processing dirs
-        # loc_dir = os.path.join(base_input["input"]["base_local_dir"], extra_folder)
-        # base_input["input"]["local_dir"] = loc_dir
-        # base_input["input"]["local_proc_dir"] = loc_dir + '_proc'
-        # base_input["input"]["local_upload_dir"] = loc_dir + '_images'
+        local_dir = os.path.join(base_input["input"]["base_local_dir"], names[0], names[1])
+        base_input["input"]["local_dir"] = local_dir
+        base_input["input"]["local_proc_dir"] = local_dir + '_proc'
+        base_input["input"]["local_upload_dir"] = local_dir + '_images'
 
         # ##REMOTE processing dirs
-        # data_dir = os.path.join(base_input["input"]["base_data_dir"], extra_folder)
-        # base_input["input"]["data_dir"] = data_dir
-        # base_input["input"]["proc_dir"] = data_dir + '_proc'
-        # base_input["input"]["upload_dir"] = data_dir + '_images' 
+        data_dir = os.path.join(base_input["input"]["base_data_dir"], names[0], names[1])
+        base_input["input"]["data_dir"] = data_dir
+        base_input["input"]["proc_dir"] = data_dir + '_proc'
+        base_input["input"]["upload_dir"] = data_dir + '_images' 
 
 
 
-        # n_batch_transfer = 128
-        # n_batch_plot = 1024
+        n_batch_transfer = 128
+        n_batch_plot = 1024
         
-        # range_delta = n_batch_transfer
+        range_delta = n_batch_transfer
 
-        # if cbf_num%n_batch_transfer==0:
-        #     subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, range_delta)
-        #     new_range = subranges[0]
-        #     print('Transfer+Stills Flow')
-        #     base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
-        #     base_input["input"]["input_range"]=new_range[1:-1]
-        #     base_input["input"]["trigger_name"]= os.path.join(
-        #         base_input["input"]["data_dir"], new_file
-        #     )
-        #     flow_input = base_input
+        if cbf_num%n_batch_transfer==0:
+             subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, range_delta)
+             new_range = subranges[0]
+             print('Transfer+Stills Flow')
+             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
+             base_input["input"]["input_range"]=new_range[1:-1]
+             base_input["input"]["trigger_name"]= os.path.join(
+                 base_input["input"]["data_dir"], new_file)
+             flow_input = base_input
         #     #print("  Range : " + base_input["input"]["input_range"])
-        #     #print(flow_input)
-        #     flow = kanzus_client.run_flow(flow_input=flow_input)
-        #     print("  Trigger : " + base_input["input"]["trigger_name"])
-        #     print("  Range : " + base_input["input"]["input_range"])
-        #     print("  UUID : " + flow['action_id'])
-        #     print('')
+        #     print(flow_input)
+             flow = kanzus_client.run_flow(flow_input=flow_input)
+             print("  Trigger : " + base_input["input"]["trigger_name"])
+             print("  Range : " + base_input["input"]["input_range"])
+             print("  UUID : " + flow['action_id'])
+             print('')
 
         # if cbf_num%n_batch_plot==0:
         #     print('Plot Flow')
