@@ -51,7 +51,26 @@ flow_definition = {
       },
       "ResultPath": "$.DialsStills",
       "WaitTime": 7200,
-      "Next": 'SSXGatherData'
+      "Next": 'Transfer_Back'
+    },
+    "Transfer_Back": {
+      "Comment": "Initial transfer",
+      "Type": "Action",
+      "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
+      "Parameters": {
+        "source_endpoint_id.$": "$.input.globus_dest_ep", 
+        "destination_endpoint_id.$": "$.input.globus_local_ep",
+        "transfer_items": [
+          {
+            "source_path.$": "$.input.data_dir",
+            "destination_path.$": "$.input.local_dir",
+            "recursive": True
+          }
+        ]
+      },
+      "ResultPath": "$.Transfer2Result",
+      "WaitTime": 600,
+      "Next": "SSXGatherData"
     },
     'SSXGatherData': {
           'Comment': 'Gather port-dials data for plot generation and upload',

@@ -4,8 +4,6 @@ def funcx_create_phil(data):
     import os
     from string import Template
 
-    import time
-
     proc_dir = data['proc_dir']
     data_dir = data['data_dir']
     run_num = data['input_files'].split("_")[-2] ##this is pretty weird

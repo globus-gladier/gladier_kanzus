@@ -40,8 +40,13 @@ class Handler(FileSystemEventHandler):
     def on_any_event(event):
         if event.is_directory:
             return None
-
-        elif event.event_type == 'created' or 'modified':
+        elif event.event_type == 'created':
+            #event.src_path is the file watchdog found
+            # Event is created, you can process it now
+            KanzusLogic(event.src_path)
+        elif event.event_type == 'modified':
+            #event.src_path is the file watchdog found
+            # Event is created, you can process it now
             KanzusLogic(event.src_path)
 
 
