@@ -62,9 +62,14 @@ def KanzusLogic(event_file):
     extra_folder = extra_folder.replace(new_file,'')
     extra_folder = extra_folder.replace('/','')
 
-    ##processing dirs
+    ##LOCAL processing dirs
+    loc_dir = os.path.join(base_input["input"]["base_local_dir"], extra_folder)
+    base_input["input"]["local_dir"] = loc_dir
+    base_input["input"]["local_proc_dir"] = loc_dir + '_proc'
+    base_input["input"]["local_upload_dir"] = loc_dir + '_images'
+
+    ##REMOTE processing dirs
     data_dir = os.path.join(base_input["input"]["base_data_dir"], extra_folder)
-    base_input["input"]["local_dir"] = os.path.join(base_input["input"]["base_local_dir"], extra_folder)
     base_input["input"]["data_dir"] = data_dir
     base_input["input"]["proc_dir"] = data_dir + '_proc'
     base_input["input"]["upload_dir"] = data_dir + '_images' 

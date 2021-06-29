@@ -17,7 +17,7 @@ flow_definition = {
           }
         ]
       },
-      "ResultPath": "$.Transfer1Result",
+      "ResultPath": "$.TransferData",
       "WaitTime": 600,
       "Next": "Dials Create Phil"
     },
@@ -51,9 +51,9 @@ flow_definition = {
       },
       "ResultPath": "$.DialsStills",
       "WaitTime": 7200,
-      "Next": 'Transfer_Back'
+      "Next": 'TransferProc'
     },
-    "Transfer_Back": {
+    "TransferProc": {
       "Comment": "Data back transfer",
       "Type": "Action",
       "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
@@ -63,12 +63,12 @@ flow_definition = {
         "transfer_items": [
           {
             "source_path.$": "$.input.proc_dir",
-            "destination_path.$": "$.input.base_local_dir",
+            "destination_path.$": "$.input.local_proc_dir",
             "recursive": True
           }
         ]
       },
-      "ResultPath": "$.Transfer2Result",
+      "ResultPath": "$.TransferProc",
       "WaitTime": 600,
       "Next": "SSXGatherData"
     },
@@ -129,7 +129,27 @@ flow_definition = {
               },
               'ResultPath': '$.SSXPublish',
               'WaitTime': 600,
-              'End': True
+          "Next": "TransferImage"
+
+          },
+          "TransferImage": {
+      "Comment": "Data back transfer",
+      "Type": "Action",
+      "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
+      "Parameters": {
+        "source_endpoint_id.$": "$.input.globus_dest_ep", 
+        "destination_endpoint_id.$": "$.input.globus_local_ep",
+        "transfer_items": [
+          {
+            "source_path.$": "$.input.upload_dir",
+            "destination_path.$": "$.input.local_upload_dir",
+            "recursive": True
           }
+        ]
+      },
+      "ResultPath": "$.TransferImage",
+      "WaitTime": 600,
+      'End': True
+    }
       }
     }
