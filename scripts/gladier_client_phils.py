@@ -49,7 +49,7 @@ class Handler(FileSystemEventHandler):
             return None
 
 def KanzusLogic(event_file):
-
+    print(event_file)
     new_file = os.path.basename(event_file)
 
     cbf_pattern = r'(\w+_\d+_)(\d+).cbf'
