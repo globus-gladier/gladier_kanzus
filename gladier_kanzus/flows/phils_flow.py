@@ -54,7 +54,7 @@ flow_definition = {
       "Next": 'Transfer_Back'
     },
     "Transfer_Back": {
-      "Comment": "Initial transfer",
+      "Comment": "Data back transfer",
       "Type": "Action",
       "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
       "Parameters": {
@@ -62,8 +62,8 @@ flow_definition = {
         "destination_endpoint_id.$": "$.input.globus_local_ep",
         "transfer_items": [
           {
-            "source_path.$": "$.input.data_dir",
-            "destination_path.$": "$.input.local_dir",
+            "source_path.$": "$.input.proc_dir",
+            "destination_path.$": "$.input.base_local_dir",
             "recursive": True
           }
         ]
