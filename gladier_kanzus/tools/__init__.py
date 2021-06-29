@@ -1,6 +1,5 @@
 import datetime
-
-from gladier.defaults import GladierDefaults as GladierBaseTool
+from gladier import GladierBaseTool
 
 from .create_phil import funcx_create_phil
 from .dials_stills import funcx_stills_process
@@ -17,7 +16,6 @@ __all__ = ['CreatePhil','DialsStills','SSXGatherData','SSXPlot',
 class CreatePhil(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         funcx_create_phil
     ]
@@ -25,7 +23,6 @@ class CreatePhil(GladierBaseTool):
 class DialsStills(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         funcx_stills_process
     ]
@@ -33,7 +30,6 @@ class DialsStills(GladierBaseTool):
 class SSXGatherData(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         ssx_gather_data
     ]
@@ -41,7 +37,6 @@ class SSXGatherData(GladierBaseTool):
 class SSXPlot(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         ssx_plot
     ]
@@ -49,7 +44,6 @@ class SSXPlot(GladierBaseTool):
 class SSXPublish(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         ssx_publish
     ]
@@ -57,7 +51,6 @@ class SSXPublish(GladierBaseTool):
 class XYSearch(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         xy_search
     ]
@@ -65,7 +58,6 @@ class XYSearch(GladierBaseTool):
 class XYPlot(GladierBaseTool):
     flow_definition = None
     required_input = []
-    # funcx_endpoints = dict()
     funcx_functions = [
         xy_plot
     ]
@@ -185,10 +177,4 @@ class SSXPublish(GladierBaseTool):
     funcx_functions = [
         ssx_publish
     ]
-# DialsVersion = GladierBaseTool()
 
-# Pilot = GladierBaseTool()
-
-# Prime = GladierBaseTool()
-
-# Primalisys = GladierBaseTool()

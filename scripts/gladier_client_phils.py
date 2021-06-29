@@ -85,10 +85,10 @@ def KanzusLogic(event_file):
             flow_input = base_input
             #print("  Range : " + base_input["input"]["input_range"])
             #print(flow_input)
-            workshop_flow = kanzus_workshop_client.start_flow(flow_input=flow_input)
+            flow = kanzus_client.run_flow(flow_input=flow_input)
             print("  Trigger : " + base_input["input"]["trigger_name"])
             print("  Range : " + base_input["input"]["input_range"])
-            print("  UUID : " + workshop_flow['action_id'])
+            print("  UUID : " + flow['action_id'])
             print('')
 
         if cbf_num%n_batch_plot==0:
@@ -98,7 +98,6 @@ def KanzusLogic(event_file):
 
 from gladier_kanzus.flows.phils_flow import flow_definition
 class KanzusSSXGladier(GladierBaseClient):
-    client_id = 'e6c75d97-532a-4c88-b031-8584a319fa3e'
     gladier_tools = [
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
@@ -125,7 +124,7 @@ def register_container():
     from funcx.sdk.client import FuncXClient
     fxc = FuncXClient()
     from gladier_kanzus.tools.dials_stills import funcx_stills_process as stills_cont
-    cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
+    cont_dir =  '/APSDataAnalysis/SSX/containers/'
     container_name = "dials_v1.simg"
     dials_cont_id = fxc.register_container(location=cont_dir+'/'+container_name,container_type='singularity')
     stills_cont_fxid = fxc.register_function(stills_cont, container_uuid=dials_cont_id)
@@ -137,7 +136,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
-        default='/eagle/APSDataAnalysis/SSX/workshop_raf_v2')
+        default='/APSDataAnalysis/SSX/random_start')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -148,13 +147,12 @@ if __name__ == '__main__':
     local_dir = args.localdir
     data_dir = args.datadir
     
-    ##Process endpoints - theta
-    local_endpoint = '8f2f2eab-90d2-45ba-a771-b96e6d530cad'
-    queue_endpoint = '23519765-ef2e-4df2-b125-e99de9154611'
-    ##Transfer endpoints - 
-    beamline_ep='87c4f45e-9c8b-11eb-8a8c-d70d98a40c8d'
-    theta_ep='08925f04-569f-11e7-bef8-22000b9a448b'
-
+    ##Process endpoints (theta - raf)
+    head_funcx_ep      = '8f2f2eab-90d2-45ba-a771-b96e6d530cad'
+    queue_funcx_ep     = '23519765-ef2e-4df2-b125-e99de9154611'
+    ##Transfer endpoints
+    beamline_globus_ep = 'a17155e6-b991-11eb-9d92-5f1f6f07872f'
+    eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
     
 
     stills_cont_fxid = register_container() ##phase out with containers
@@ -170,19 +168,19 @@ if __name__ == '__main__':
             "beamy": "218.200",
 
             # funcX endpoints
-            "funcx_local_ep": local_endpoint,
-            "funcx_queue_ep": queue_endpoint,
+            "funcx_local_ep": head_funcx_ep,
+            "funcx_queue_ep": queue_funcx_ep,
 
             # globus endpoints
-            "globus_local_ep": beamline_ep,
-            "globus_dest_ep": theta_ep, 
+            "globus_local_ep": beamline_globus_ep,
+            "globus_dest_ep": eagle_globus_ep, 
 
             # container hack for stills
             "stills_cont_fxid": stills_cont_fxid
         }
     }
 
-    kanzus_workshop_client = KanzusSSXGladier()
+    kanzus_client = KanzusSSXGladier()
 
     exp = KanzusTriggers(local_dir)
     exp.run()

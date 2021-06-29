@@ -1,6 +1,6 @@
 import os
 from setuptools import setup, find_packages
-
+from glob import glob
 
 install_requires = []
 with open('requirements.txt') as reqs:
@@ -10,7 +10,7 @@ with open('requirements.txt') as reqs:
             continue
         install_requires.append(req)
 
-script_list = glob('scripts/gladier_*.sh')
+script_list = glob('scripts/gladier_*')
 
 setup(
     name='gladier-kanzus',
