@@ -9,6 +9,7 @@ flow_definition = {
       "Parameters": {
         "source_endpoint_id.$": "$.input.globus_local_ep", 
         "destination_endpoint_id.$": "$.input.globus_dest_ep",
+        "sync_level": "exists",
         "transfer_items": [
           {
             "source_path.$": "$.input.local_dir",
@@ -60,6 +61,7 @@ flow_definition = {
       "Parameters": {
         "source_endpoint_id.$": "$.input.globus_dest_ep", 
         "destination_endpoint_id.$": "$.input.globus_local_ep",
+        "sync_level": "exists",
         "transfer_items": [
           {
             "source_path.$": "$.input.proc_dir",
