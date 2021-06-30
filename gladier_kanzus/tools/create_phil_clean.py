@@ -3,6 +3,8 @@ def funcx_create_phil(data):
     import json
     import os
     from string import Template
+    from glob import glob
+    import re
 
     proc_dir = data['proc_dir']
     data_dir = data['data_dir']
@@ -11,15 +13,28 @@ def funcx_create_phil(data):
     if not os.path.exists(proc_dir):
         os.makedirs(proc_dir)
         
-    
-    if 'suffix' in data:
-        phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
-    else:
-        phil_name = f"{proc_dir}/process_{run_num}.phil"
+    datablock_list =  sorted(glob(proc_dir+'/*datablock*'))
+    blocks_num = []
+    for k_block in datablock_list:
+        k_file = os.path.basename(k_block)
+        num = int(re.search(r'_([0-9]+)_datablock', k_file).group(1))
+        blocks_num.append(num)
 
-    if os.path.isfile(phil_name):
-        return phil_name
-        
+    cbf_list = sorted(glob(data_dir+'/*.cbf'))
+
+    proc_list=[]
+    for k_cbf in cbf_list:
+        k_file = os.path.basename(k_cbf)
+        num = int(re.search(r'_([0-9]+)\.', k_file).group(1))
+        if not num in blocks_num:
+            proc_list.append(k_cbf)
+
+
+    phil_name = f"{proc_dir}/process_{run_num}.phil"
+    
+
+
+    #########################################################################
     unit_cell = data.get('unit_cell', None)
     
     ##opening existing files
