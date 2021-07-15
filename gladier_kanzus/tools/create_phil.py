@@ -1,4 +1,6 @@
-def funcx_create_phil(data):
+from gladier import GladierBaseTool, generate_flow_definition
+
+def funcx_create_phil(**data):
     """Create a phil file if one doesn't already exist"""
     import json
     import os
@@ -81,3 +83,7 @@ indexing {
     with open(phil_name, 'w') as fp:
         fp.write(phil_data)
     return phil_name
+
+
+class CreatePhil(GladierBaseTool):
+    funcx_functions = [funcx_create_phil]

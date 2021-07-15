@@ -1,4 +1,6 @@
-def funcx_stills_process(data):
+from gladier import GladierBaseTool, generate_flow_definition
+
+def funcx_stills_process(**data):
     import os
     import subprocess
     from distutils.dir_util import copy_tree
@@ -29,3 +31,8 @@ def funcx_stills_process(data):
                              shell=True, executable='/bin/bash')
     
     return str(res.stdout)
+
+
+
+class DialsStills(GladierBaseTool):
+    funcx_functions = [funcx_stills_process]

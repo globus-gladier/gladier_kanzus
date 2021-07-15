@@ -1,6 +1,6 @@
+from gladier import GladierBaseTool, generate_flow_definition
 
-
-def ssx_gather_data(data):
+def ssx_gather_data(**data):
     import re
     import os
     import json
@@ -89,3 +89,50 @@ def ssx_gather_data(data):
     metadata['metadata'].update(beamline_metadata)
     metadata['metadata'].update(data.get('metadata', {}))
     return metadata
+
+    
+
+class SSXGatherData(GladierBaseTool):
+
+    flow_definition = {
+      'Comment': 'Gather port-dials data for plot generation and upload',
+      'StartAt': 'SSXPlot',
+      'States': {
+        'SSXPlot': {
+          'Comment': 'Gather port-dials data for plot generation and upload',
+          'Type': 'Action',
+          'ActionUrl': 'https://api.funcx.org/automate',
+          'ActionScope': 'https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/automate2',
+          'ExceptionOnActionFailure': False,
+          'Parameters': {
+              'tasks': [{
+                'endpoint.$': '$.input.funcx_endpoint_non_compute',
+                'func.$': '$.input.ssx_gather_data_funcx_id',
+                'payload.$': '$.input',
+              }]
+          },
+          'ResultPath': '$.SSXGatherData',
+          'WaitTime': 600,
+          'End': True
+        }
+      }
+    }
+
+    flow_input = {
+        'trigger_name': '/projects/APSDataAnalysis/nick/SSX/S9/nsp10nsp16/K/Kaleidoscope_processing',
+        'metadata': {
+            "description": "Automated data processing.",
+            "creators": [{"creatorName": "Kanzus"}],
+            "publisher": "Automate",
+            "subjects": [{"subject": "SSX"}],
+            "publicationYear": str(datetime.datetime.now().year),
+        }
+    }
+
+    required_input = [
+        'trigger_name',
+    ]
+
+    funcx_functions = [
+        ssx_gather_data
+    ]
