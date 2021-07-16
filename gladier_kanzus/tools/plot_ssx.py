@@ -1,8 +1,8 @@
+from gladier import GladierBaseTool, generate_flow_definition
 
-def funcx_plot_ssx(data):
+def funcx_plot_ssx(**data):
     import os
     import json
-    import shutil
     import glob
     import subprocess
     import numpy as np

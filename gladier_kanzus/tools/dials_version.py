@@ -1,4 +1,6 @@
-def dials_version(data):
+from gladier import GladierBaseTool, generate_flow_definition
+
+def dials_version(**data):
     import subprocess
     from subprocess import PIPE
     

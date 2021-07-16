@@ -1,6 +1,6 @@
+from gladier import GladierBaseTool, generate_flow_definition
 
-
-def ssx_plot(data):
+def ssx_plot(**data):
     """
     Plot the current list of ints so far. Data requires the following keys
         * xdim (int) X dimension for the plot
@@ -31,3 +31,39 @@ def ssx_plot(data):
     plt.axis('off')
     plt.imshow(lattice_counts, cmap='hot', interpolation=None, vmax=4)
     plt.savefig(data['plot_filename'])
+
+
+
+class SSXPlot(GladierBaseTool):
+
+    flow_definition = {
+      'Comment': 'Plot SSX data',
+      'StartAt': 'SSXPlot',
+      'States': {
+        'SSXPlot': {
+          'Comment': 'Upload to petreldata, ingest to SSX search index',
+          'Type': 'Action',
+          'ActionUrl': 'https://api.funcx.org/automate',
+          'ActionScope': 'https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/automate2',
+          'ExceptionOnActionFailure': False,
+          'Parameters': {
+              'tasks': [{
+                'endpoint.$': '$.input.funcx_endpoint_non_compute',
+                'func.$': '$.input.ssx_plot_funcx_id',
+                'payload.$': '$.input',
+            }]
+          },
+          'ResultPath': '$.SSXPlot',
+          'WaitTime': 600,
+          'End': True
+        }
+      }
+    }
+
+    flow_input = {}
+
+    required_input = []
+
+    funcx_functions = [
+        ssx_plot
+    ]

@@ -1,4 +1,6 @@
-def funcx_prime(data):
+from gladier import GladierBaseTool, generate_flow_definition
+
+def funcx_prime(**data):
     """Run the PRIME tool on the int-list.
     - Change dir to the <exp>_prime directory
     - Create phil file for prime.run
@@ -113,3 +115,8 @@ n_bins = 20""")
     shutil.copyfile(f"{prime_run_name}/log.txt", f"../{exp_name}_images/prime_log.txt")
     return 'done'
 
+@generate_flow_definition
+class Prime(GladierBaseTool):
+    funcx_functions = [
+        funcx_prime
+    ]

@@ -1,4 +1,6 @@
-def xy_plot(data):
+from gladier import GladierBaseTool, generate_flow_definition
+
+def xy_plot(**data):
     """Count the number of ints in the proc dirs and plot them"""
     import matplotlib.pyplot as plt
     import seaborn as sb
@@ -31,3 +33,9 @@ def xy_plot(data):
     ax = sb.heatmap(table, linewidths=0.5, cmap="Blues")
     ax.invert_yaxis()
     plt.savefig(f'{upload_dir}/xysearch.png', bbox_inches='tight', dpi=100)
+
+    
+class XYPlot(GladierBaseTool):
+    funcx_functions = [
+        xy_plot
+        ]
