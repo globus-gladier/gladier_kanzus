@@ -75,14 +75,26 @@ def KanzusLogic(event_file):
         
         base_input["trigger_name"] = os.path.join(data_dir,names[-1])
 
-        n_batch_transfer = 128
-       
+        n_batch_transfer = 512
+        n_batch_pure = 128
         if cbf_num%n_batch_transfer==0:
              subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, n_batch_transfer)
              new_range = subranges[0]
              base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
              base_input["input"]["input_range"]=new_range[1:-1]
-             flow = kanzus_client.run_flow(flow_input=base_input)
+             flow = transfer_phils_client.run_flow(flow_input=base_input)
+
+             print('Transfer+Stills Flow')
+             print("  Local Trigger : " + event_file)
+             print("  Range : " + base_input["input"]["input_range"])
+             print("  UUID : " + flow['action_id'])
+             print('')
+        if cbf_num%n_batch_pure==0:
+             subranges = create_ranges(cbf_num-n_batch_transfer, cbf_num, n_batch_transfer)
+             new_range = subranges[0]
+             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"
+             base_input["input"]["input_range"]=new_range[1:-1]
+             flow = transfer_phils_client.run_flow(flow_input=base_input)
 
              print('Transfer+Stills Flow')
              print("  Local Trigger : " + event_file)
@@ -90,11 +102,23 @@ def KanzusLogic(event_file):
              print("  UUID : " + flow['action_id'])
              print('')
 
-
 @generate_flow_definition
-class KanzusSSXGladier(GladierBaseClient):
+class TransferPhilsClient(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.TransferOut', #TransferData??
+        'gladier_kanzus.tools.CreatePhil',
+        'gladier_kanzus.tools.DialsStills',
+        'gladier_kanzus.tools.SSXGatherData',
+        'gladier_kanzus.tools.TransterProc',
+        'gladier_kanzus.tools.SSXPlot',
+        'gladier_kanzus.tools.SSXPublish',
+        'gladier_kanzus.tools.TransferImage',
+    ]
+
+@generate_flow_definition
+class PhilsClient(GladierBaseClient):
+    gladier_tools = [
+#        'gladier_kanzus.tools.TransferOut', #TransferData??
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
         'gladier_kanzus.tools.SSXGatherData',
@@ -179,8 +203,11 @@ if __name__ == '__main__':
         }
     }
 
-    kanzus_client = KanzusSSXGladier()
-    pprint(kanzus_client.flow_definition)
+    transfer_phils_client = TransferPhilsClient()
+    phils_client = PhilsClient()
+
+    pprint(transfer_phils_client.flow_definition)
+
     # exp = KanzusTriggers(local_dir)
     # exp.run()
 
