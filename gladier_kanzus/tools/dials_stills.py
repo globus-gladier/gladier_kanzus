@@ -33,6 +33,6 @@ def funcx_stills_process(**data):
     return str(res.stdout)
 
 
-
+@generate_flow_definition
 class DialsStills(GladierBaseTool):
     funcx_functions = [funcx_stills_process]
