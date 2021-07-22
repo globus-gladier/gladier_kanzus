@@ -84,6 +84,6 @@ indexing {
         fp.write(phil_data)
     return phil_name
 
-
+@generate_flow_definition
 class CreatePhil(GladierBaseTool):
     funcx_functions = [funcx_create_phil]

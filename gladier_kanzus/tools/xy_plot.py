@@ -34,7 +34,7 @@ def xy_plot(**data):
     ax.invert_yaxis()
     plt.savefig(f'{upload_dir}/xysearch.png', bbox_inches='tight', dpi=100)
 
-    
+@generate_flow_definition
 class XYPlot(GladierBaseTool):
     funcx_functions = [
         xy_plot
