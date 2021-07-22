@@ -6,7 +6,7 @@ import numpy as np
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from gladier import GladierBaseClient, generate_flow_definition
-#import gladier.tests
+import gladier.tests
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -105,28 +105,28 @@ def KanzusLogic(event_file):
 @generate_flow_definition
 class TransferPhilsClient(GladierBaseClient):
     gladier_tools = [
-        'gladier_kanzus.tools.TransferOut', #TransferData??
+#        'gladier_kanzus.tools.TransferOut',
         'gladier_kanzus.tools.CreatePhil',
-        'gladier_kanzus.tools.DialsStills',
-        'gladier_kanzus.tools.SSXGatherData',
-        'gladier_kanzus.tools.TransterProc',
-        'gladier_kanzus.tools.SSXPlot',
-        'gladier_kanzus.tools.SSXPublish',
-        'gladier_kanzus.tools.TransferImage',
+#        'gladier_kanzus.tools.DialsStills',
+#        'gladier_kanzus.tools.SSXGatherData',
+#        'gladier_kanzus.tools.TransferProc',
+#        'gladier_kanzus.tools.SSXPlot',
+#        'gladier_kanzus.tools.SSXPublish',
+#        'gladier_kanzus.tools.TransferImage',
     ]
 
-@generate_flow_definition
-class PhilsClient(GladierBaseClient):
-    gladier_tools = [
-#        'gladier_kanzus.tools.TransferOut', #TransferData??
-        'gladier_kanzus.tools.CreatePhil',
-        'gladier_kanzus.tools.DialsStills',
-        'gladier_kanzus.tools.SSXGatherData',
-        'gladier_kanzus.tools.TransterProc',
-        'gladier_kanzus.tools.SSXPlot',
-        'gladier_kanzus.tools.SSXPublish',
-        'gladier_kanzus.tools.TransferImage',
-    ]
+#@generate_flow_definition
+#class PhilsClient(GladierBaseClient):
+#    gladier_tools = [
+##        'gladier_kanzus.tools.TransferOut', #TransferData??
+#        'gladier_kanzus.tools.CreatePhil',
+#        'gladier_kanzus.tools.DialsStills',
+#        'gladier_kanzus.tools.SSXGatherData',
+#        'gladier_kanzus.tools.TransferProc',
+#        'gladier_kanzus.tools.SSXPlot',
+#        'gladier_kanzus.tools.SSXPublish',
+#        'gladier_kanzus.tools.TransferImage',
+#    ]
 
 def create_ranges(start,end,delta):
 
@@ -205,9 +205,9 @@ if __name__ == '__main__':
     }
 
     transfer_phils_client = TransferPhilsClient()
-    phils_client = PhilsClient()
+#    phils_client = PhilsClient()
 
-    pprint(transfer_phils_client.flow_definition)
+#    pprint(transfer_phils_client.flow_definition)
 
     # exp = KanzusTriggers(local_dir)
     # exp.run()
