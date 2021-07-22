@@ -169,9 +169,10 @@ if __name__ == '__main__':
     data_dir = args.datadir
     
     ##Process endpoints (theta - raf)
-    head_funcx_ep      = '8f2f2eab-90d2-45ba-a771-b96e6d530cad'
-    queue_funcx_ep     = '23519765-ef2e-4df2-b125-e99de9154611'
+    head_funcx_ep      = 'e449e8b8-e114-4659-99af-a7de06feb847'
+    queue_funcx_ep     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
         
+
     ##Transfer endpoints
     beamline_globus_ep = '249bd870-d8f9-11eb-8134-bbca43030bb4'
     eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
