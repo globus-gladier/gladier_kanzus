@@ -125,7 +125,7 @@ class SSXGatherData(GladierBaseTool):
             "creators": [{"creatorName": "Kanzus"}],
             "publisher": "Automate",
             "subjects": [{"subject": "SSX"}],
-            "publicationYear": str(datetime.datetime.now().year),
+            "publicationYear": '2021',
         }
     }
 

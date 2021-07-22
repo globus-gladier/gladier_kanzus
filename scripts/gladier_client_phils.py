@@ -73,7 +73,7 @@ def KanzusLogic(event_file):
         base_input["input"]["proc_dir"] = data_dir + '_proc'
         base_input["input"]["upload_dir"] = data_dir + '_images' 
         
-        base_input["trigger_name"] = os.path.join(data_dir,names[-1])
+        base_input["input"]["trigger_name"] = os.path.join(data_dir,names[-1])
 
         n_batch_transfer = 128
        
