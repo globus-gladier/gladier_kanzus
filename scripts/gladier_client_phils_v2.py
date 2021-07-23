@@ -178,7 +178,7 @@ if __name__ == '__main__':
         
 
     ##Transfer endpoints
-    beamline_globus_ep = '249bd870-d8f9-11eb-8134-bbca43030bb4'
+    beamline_globus_ep = 'ff32af54-ebe6-11eb-b467-eb47ba14b5cc'
     eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
     theta_globus_ep    = '08925f04-569f-11e7-bef8-22000b9a448b'
 

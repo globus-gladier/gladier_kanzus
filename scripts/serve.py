@@ -9,7 +9,7 @@ import argparse
 def create_experiment(sample_name, exp_name, target_folder):
     
 
-    f_path = os.path.join(target_folder,exp_name)
+    f_path = os.path.join(target_folder,exp_name,sample_name)
     
     print('Creating experiment')
     print('  Sample name: ' + sample_name)
@@ -49,11 +49,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--samplename', type=str, default='Ohakune')
     parser.add_argument('--expname', type=str, default='O')
-    parser.add_argument('--workdir', type=str, default='/ssx/workshop/virtual_exp')
-    parser.add_argument('--gpdfolder',type=str, default='/ssx/workshop/original_files/O')
-    parser.add_argument('--stdfolder',type=str, default='/ssx/workshop/original_files/std_files')
-    parser.add_argument('--delta', type=float, default=0.1)
-    parser.add_argument('--n_files', type=int, default=2048)
+    parser.add_argument('--workdir', type=str, default='/net/data/idsbc/idstaff/raf/virtual_exp')
+    parser.add_argument('--gpdfolder',type=str, default='/net/data/idsbc/idstaff/raf/original_files/O')
+    parser.add_argument('--stdfolder',type=str, default='/net/data/idsbc/idstaff/raf/original_files/std_files')
+    parser.add_argument('--delta', type=float, default=0.2)
+    parser.add_argument('--n_files', type=int, default=1024)
     return parser.parse_args()
 
 if __name__ == '__main__':
