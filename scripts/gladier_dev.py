@@ -38,13 +38,9 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
-
         if event.is_directory:
             return None
-#        elif event.event_type == 'created':
-#            KanzusLogic(event.src_path)
-#            return None
-        elif event.event_type == 'modified':
+        elif event.event_type == 'closed':
             KanzusLogic(event.src_path)
             return None
 #https://stackoverflow.com/questions/58484940/process-multiple-oncreated-events-parallelly-in-python-watchdog

@@ -9,7 +9,7 @@ import argparse
 def create_experiment(sample_name, exp_name, target_folder):
     
 
-    f_path = os.path.join(target_folder,exp_name,sample_name)
+    f_path = os.path.join(target_folder,sample_name,exp_name)
     
     print('Creating experiment')
     print('  Sample name: ' + sample_name)

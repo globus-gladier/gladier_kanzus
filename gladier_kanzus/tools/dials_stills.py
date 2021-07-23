@@ -30,7 +30,7 @@ def funcx_stills_process(**data):
     res = subprocess.run(cmd, stdout=PIPE, stderr=PIPE,
                              shell=True, executable='/bin/bash')
     
-    return str(res.stdout)
+    return cmd, str(res.stdout)
 
 
 @generate_flow_definition
