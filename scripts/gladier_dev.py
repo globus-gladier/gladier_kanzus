@@ -3,7 +3,8 @@
 import time, argparse, os, re
 from pprint import pprint
 import numpy as np
-from watchdog.observers import Observer
+#from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver as Observer
 from watchdog.events import FileSystemEventHandler
 from gladier import GladierBaseClient, generate_flow_definition
 #import gladier.tests
@@ -25,7 +26,9 @@ class KanzusTriggers:
 
         event_handler = Handler()
         self.observer.schedule(event_handler, self.folder_path, recursive = True)
+        
         self.observer.start()
+        
         try:
             while True:
                 time.sleep(1)
@@ -38,9 +41,13 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
+        #print(event)
         if event.is_directory:
             return None
-        elif event.event_type == 'closed':
+        elif event.event_type == 'created':
+            KanzusLogic(event.src_path)
+            return None
+        elif event.event_type == 'modified':
             KanzusLogic(event.src_path)
             return None
 #https://stackoverflow.com/questions/58484940/process-multiple-oncreated-events-parallelly-in-python-watchdog
@@ -72,10 +79,10 @@ def KanzusLogic(event_file):
         
         base_input["input"]["trigger_name"] = os.path.join(data_dir,names[-1])
 
-        n_batch_transfer = 32
-        n_initial_transfer = 8
-        n_batch_stills = 16
-        n_batch_prime =  64
+        n_batch_transfer = 2048#1024
+        n_initial_transfer = 512
+        n_batch_stills = 256
+        n_batch_prime =  10000
 
         if cbf_num%n_batch_transfer==0 or cbf_num==n_initial_transfer:
              
@@ -103,13 +110,34 @@ def KanzusLogic(event_file):
              print("  UUID : " + flow['action_id'])
              print('')
 
+#       if cbf_num%n_batch_prime==0:                                                                        
+#             subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
+#             new_range = subranges[0]                                                                        
+#             base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
+#             base_input["input"]["input_range"]=new_range[1:-1]                                              
+#                                                                                                             
+#             label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
+#                                                                                                             
+#             flow = prime_client.run_flow(flow_input=base_input, label=label)                               
+#                                                                                                             
+#             print('Prime Flow')                                                                            
+#             print("  Local Trigger : " + event_file)                                                        
+#             print("  Range : " + base_input["input"]["input_range"])                                        
+#             print("  UUID : " + flow['action_id'])                                                          
+#             print('')    
+
+
 @generate_flow_definition
 class TransferClient(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.TransferOut',
     ]
 
-@generate_flow_definition
+@generate_flow_definition(modifiers={
+    'funcx_create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
+    'ssx_plot': {'endpoint': 'funcx_endpoint_non_compute'},
+    'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'}
+})
 class StillsClient(GladierBaseClient):
     gladier_tools = [
 #        'gladier_kanzus.tools.TransferOut', #TransferData??
@@ -172,7 +200,6 @@ if __name__ == '__main__':
     eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
     theta_globus_ep    = '08925f04-569f-11e7-bef8-22000b9a448b'
 
-    stills_cont_fxid = register_container() ##phase out with containers
 
     base_input = {
         "input": {
@@ -194,7 +221,7 @@ if __name__ == '__main__':
 	    "globus_dest_ep": theta_globus_ep,
 
             # container hack for stills
-            "stills_cont_fxid": stills_cont_fxid
+            "funcx_stills_process_funcx_id": register_container()
         }
     }
 

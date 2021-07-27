@@ -7,6 +7,7 @@ from .create_phil import CreatePhil
 from .dials_stills import DialsStills
 from .plot import SSXPlot
 from .gather_data import SSXGatherData
+from .publish import SSXPublish
 from .xy_search import XYSearch
 from .xy_plot import XYPlot
 
