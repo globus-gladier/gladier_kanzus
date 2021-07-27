@@ -2,7 +2,7 @@ from typing import List
 from gladier import GladierBaseTool, generate_flow_definition
 
 
-def ssx_plot(xdim: int, ydim: int, int_indices: List[int], plot_filename: str):
+def ssx_plot(xdim, ydim, int_indices, plot_filename):
     """
     Plot the current list of ints so far. Data requires the following keys
         * xdim (int) X dimension for the plot

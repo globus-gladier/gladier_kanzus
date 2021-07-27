@@ -12,7 +12,10 @@ import gladier_kanzus.logging  # noqa
             'plot_filename.$': '$.SsxGatherData.details.result[0].plot_filename',
          }
     },
-    'publish_gather_metadata': {'WaitTime': 120},
+    'publish_gather_metadata': {
+        'WaitTime': 120,
+        'payload': '$.SsxGatherData.details.result[0]',
+},
 })
 class SSXPlotAndPublish(GladierBaseClient):
     gladier_tools = [

@@ -90,7 +90,11 @@ def ssx_gather_data(**data):
     }
     metadata['metadata'].update(beamline_metadata)
     metadata['metadata'].update(data.get('metadata', {}))
-    return metadata
+
+    pilot = data['pilot']
+    pilot['metadata'] = metadata
+    pilot['groups'] = pilot.get('groups', [])
+    return pilot
 
 
 @generate_flow_definition
