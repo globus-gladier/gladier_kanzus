@@ -72,32 +72,36 @@ def ssx_gather_data(**data):
     # Fetch beamline metadata
     with open(beamline_file, 'r') as fp:
         beamline_metadata = json.load(fp)
-    protein = beamline_metadata.get('user_input', {}).get('prot_name') or protein
+    user_input = beamline_metadata.get('user_input', {})
+    protein = user_input.get('protein_name', protein)
 
-    metadata = {
-        'processing_dir': processing_dir,
-        'upload_dir': upload_dir,
-        'plot_filename': os.path.join(upload_dir, 'composite.png'),
-        'int_indices': sorted(int_indices),
-        'metadata': {
-            'chip': exp_name,
-            'experiment_number': exp_number,
-            'run_name': run_name,
-            'protein': protein,
-            'trigger_name': trigger_name,
-            'batch_info': batch_info,
+    # Update any metadata in the pilot 'metadata' key
+    metadata = data['pilot'].get('metadata', {})
+    metadata.update(beamline_metadata)
+    metadata.update({
+        'chip': exp_name,
+        'experiment_number': exp_number,
+        'run_name': run_name,
+        'protein': protein,
+        'trigger_name': trigger_name,
+        'batch_info': batch_info,
+    })
+    data['pilot']['metadata'] = metadata
+
+    return {
+        'pilot': data['pilot'],
+        'plot': {
+            'plot_filename': os.path.join(upload_dir, 'composite.png'),
+            'int_indices': sorted(int_indices),
+            'x_num_steps': user_input.get('x_num_steps', 0),
+            'y_num_steps': user_input.get('y_num_steps', 0),
         }
     }
-    metadata['metadata'].update(beamline_metadata)
-    metadata['metadata'].update(data.get('metadata', {}))
-
-    pilot = data['pilot']
-    pilot['metadata'] = metadata
-    pilot['groups'] = pilot.get('groups', [])
-    return pilot
 
 
-@generate_flow_definition
+@generate_flow_definition(modifiers={
+    'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'}
+})
 class SSXGatherData(GladierBaseTool):
 
     flow_input = {
