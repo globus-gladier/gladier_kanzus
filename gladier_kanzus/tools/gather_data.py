@@ -11,6 +11,7 @@ def ssx_gather_data(**data):
     trigger_name = data['trigger_name']
     processing_dir = data['proc_dir']
     upload_dir = data['upload_dir']
+    tar_input = data['tar_input']
 
     sample_metadata = trigger_name.split('/')[-4:]
     assert len(sample_metadata) == 4 and trigger_name.endswith('cbf'), (
@@ -64,10 +65,11 @@ def ssx_gather_data(**data):
         'total_number_of_int_files': len(int_indices)
     }
 
-    # Create a zip of all the int files
-    with ZipFile(os.path.join(upload_dir, 'ints.zip'), 'w') as zipObj:
-        for int_filename in int_filenames:
-            zipObj.write(os.path.join(processing_dir, int_filename))
+    # Move int files to the upload dir.
+    os.makedirs(tar_input, mode=0o775, exist_ok=True)
+    for int_filename in int_filenames:
+        shutil.copyfile(os.path.join(processing_dir, int_filename),
+                        os.path.join(tar_input, int_filename))
 
     # Fetch beamline metadata
     with open(beamline_file, 'r') as fp:
@@ -116,6 +118,7 @@ class SSXGatherData(GladierBaseTool):
 
     required_input = [
         'trigger_name',
+        'tar_input',
         'proc_dir',
         'upload_dir',
         'funcx_endpoint_non_compute',

@@ -1,9 +1,11 @@
 from pprint import pprint
+import pathlib
 from gladier import GladierBaseClient, generate_flow_definition
 import gladier_kanzus.logging  # noqa
 
 
 @generate_flow_definition(modifiers={
+    'tar': {'endpoint': 'funcx_endpoint_non_compute'},
     'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
     'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
@@ -13,6 +15,7 @@ class SSXPlotAndPublish(GladierBaseClient):
         # 'gladier_kanzus.tools.CreatePhil',
         # 'gladier_kanzus.tools.DialsStills',
         'gladier_kanzus.tools.gather_data.SSXGatherData',
+        'gladier_tools.posix.tar.Tar',
         'gladier_kanzus.tools.plot.SSXPlot',
         'gladier_tools.publish.Publish',
     ]
@@ -26,6 +29,8 @@ if __name__ == '__main__':
             'trigger_name': '/projects/APSDataAnalysis/nick/SSX/S13/LYSO/A/Avalon_13_00025.cbf',
             'proc_dir': '/projects/APSDataAnalysis/nick/SSX/S13/LYSO/A/a_processing',
             'upload_dir': upload_dir,
+            'tar_input': str(pathlib.Path(upload_dir).parent / 'ints'),
+            'tar_output': str(pathlib.Path(upload_dir) / 'ints.tar.gz'),
 
             'pilot': {
                 # This is the directory which will be published to petrel
