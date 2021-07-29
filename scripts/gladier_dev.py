@@ -136,21 +136,9 @@ class TransferClient(GladierBaseClient):
 
 @generate_flow_definition(modifiers={
     'funcx_create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
-    'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'},
-    'ssx_plot': {
-        'payload': {
-            'xdim.$': '$.SsxGatherData.details.result[0].metadata.user_input.x_num_steps',
-            'ydim.$': '$.SsxGatherData.details.result[0].metadata.user_input.y_num_steps',
-            'int_indices.$': '$.SsxGatherData.details.result[0].int_indices',
-            'plot_filename.$': '$.SsxGatherData.details.result[0].plot_filename',
-         },
-        'endpoint': 'funcx_endpoint_non_compute',
-
-    },
-    'publish_gather_metadata': {
-        'WaitTime': 120,
-        'payload': '$.SsxGatherData.details.result[0]',
-    },
+    # SSXGatherData produces both 'plot' data for plots and 'pilot' metadata for ingesting into search
+    'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
+    'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
 class StillsClient(GladierBaseClient):
     gladier_tools = [
@@ -160,7 +148,7 @@ class StillsClient(GladierBaseClient):
         'gladier_kanzus.tools.SSXGatherData',
         'gladier_kanzus.tools.TransferProc',
         'gladier_kanzus.tools.SSXPlot',
-        'gladier_kanzus.tools.SSXPublish',
+        'gladier_tools.publish.Publish',
         'gladier_kanzus.tools.TransferImage',
     ]
 
