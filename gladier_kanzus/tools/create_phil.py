@@ -1,6 +1,6 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
-def funcx_create_phil(**data):
+def create_phil(**data):
     """Create a phil file if one doesn't already exist"""
     import json
     import os
@@ -86,4 +86,4 @@ indexing {
 
 @generate_flow_definition
 class CreatePhil(GladierBaseTool):
-    funcx_functions = [funcx_create_phil]
+    funcx_functions = [create_phil]

@@ -1,6 +1,6 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
-def funcx_stills_process(**data):
+def stills_process(**data):
     import os
     import subprocess
     from distutils.dir_util import copy_tree
@@ -35,4 +35,4 @@ def funcx_stills_process(**data):
 
 @generate_flow_definition
 class DialsStills(GladierBaseTool):
-    funcx_functions = [funcx_stills_process]
+    funcx_functions = [stills_process]

@@ -36,6 +36,4 @@ def xy_plot(**data):
 
 @generate_flow_definition
 class XYPlot(GladierBaseTool):
-    funcx_functions = [
-        xy_plot
-        ]
+    funcx_functions = [xy_plot]

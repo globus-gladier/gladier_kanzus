@@ -13,10 +13,10 @@ def xy_search(**data):
     step = float(data.get("step", 0.1))
     beamx = float(data.get("beamx"))
     beamy = float(data.get("beamy"))
-    local_ep = data.get('funcx_local_ep')
-    queue_ep = data.get('funcx_queue_ep')
-    stills_cont_fxid = data.get("stills_cont_fxid")
-    funcx_create_phil_funcx_id = data.get("funcx_create_phil_funcx_id")
+    local_ep = data.get('funcx_endpoint_non_compute')
+    queue_ep = data.get('funcx_endpoint_compute')
+    stills_cont_fxid = data.get("stills_process_funcx_id")
+    funcx_create_phil_funcx_id = data.get("create_phil_funcx_id")
 
     x_values = np.round(np.arange(beamx - span_half, beamx + span_half + step, step), decimals=sig_figs)
     y_values = np.round(np.arange(beamy - span_half, beamy + span_half + step, step), decimals=sig_figs)
@@ -36,20 +36,20 @@ def xy_search(**data):
                 del(payload['step'])
                 del(payload['sig_figs'])
                 del(payload['spfuncx_local_epan'])
-                del(payload['funcx_queue_ep'])
-                del(payload['stills_cont_fxid'])
-                del(payload['funcx_create_phil_funcx_id'])
+                del(payload['funcx_endpoint_compute'])
+                del(payload['stills_process_funcx_id'])
+                del(payload['create_phil_funcx_id'])
             except:
                 pass
 
             phil_task = { 
                 "endpoint": local_ep,
-                "func": funcx_create_phil_funcx_id,
+                "function": funcx_create_phil_funcx_id,
                 "payload": payload
             }
             stills_task = { 
                 "endpoint": queue_ep,
-                "func": stills_cont_fxid,
+                "function": stills_cont_fxid,
                 "payload": payload
             }
             

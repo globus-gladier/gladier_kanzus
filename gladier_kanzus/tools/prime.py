@@ -12,14 +12,11 @@ def funcx_prime(**data):
     import shutil
     import subprocess
     from subprocess import PIPE
-    from zipfile import ZipFile
     from string import Template
 
     run_num = data['input_files'].split("/")[-1].split("_")[1]
-#run_num = data['input_files'].split("_")[1]
     run_dir = "/".join(data['input_files'].split("/")[:-1])
     exp_name = data['input_files'].split("/")[-1].split("_")[0]
-    proc_dir = f'{run_dir}/{exp_name}_processing'
     prime_dir = f'{run_dir}/{exp_name}_prime'
     unit_cell = data.get('unit_cell', None)
     os.chdir(run_dir)
