@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%environment
+    PATH="/container/miniconda/bin:$PATH"
+
+%post
+    mkdir -p /container
+
+
+    apt-get update \
+      && apt-get install -y wget tar git \
+      && rm -rf /var/lib/apt/lists/*
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+
+
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /container/miniconda && rm Miniconda3-latest-Linux-x86_64.sh
+    # keep conda in user dir, so can do conda install
+    export PATH="/container:/container/miniconda/bin:$PATH"
+
+    conda config --set always_yes yes --set changeps1 no --set auto_update_conda yes
+    conda install conda-build anaconda-client \
+      && conda update conda
+
+    cd container
+
+    wget https://dials.diamond.ac.uk/diamond_builds/dials-linux-x86_64-conda3.tar.xz
+    tar -xJf dials-linux-x86_64-conda3.tar.xz
+    rm dials-linux-x86_64-conda3.tar.xz
+
+    cd dials-installer-dev
+    ./install 
+    cd ..  
+
+    pip install funcx
+    pip install funcx-endpoint
+    pip install numpy matplotlib
+    
+    ln -s  /usr/local/dials-dev20210226/dials_env.sh /dials_env.sh

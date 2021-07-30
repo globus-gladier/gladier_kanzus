@@ -1,6 +1,6 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
-def xy_search(**data):
+def xy_create_payload(**data):
     """Create funcX inputs for the phil and stills tools
     for a range of beamx/y values.
     """
@@ -60,4 +60,4 @@ def xy_search(**data):
 
 @generate_flow_definition
 class XYSearch(GladierBaseTool):
-    funcx_functions = [xy_search]
+    funcx_functions = [xy_create_payload]
