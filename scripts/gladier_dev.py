@@ -83,15 +83,20 @@ def KanzusLogic(event_file):
         base_input["input"]["trigger_name"] = event_file
 
        
+        ## triggers for data transfer BEAMLINE >> THETA
         n_initial_transfer = 512
         n_batch_transfer = 2048
+
+        ## triggers for stills batch procces (THETA)
         n_batch_stills = 256
+        
+        ## triggers for prime batch procces (THETA)
         n_batch_prime =  10000
 
         if cbf_num%n_batch_transfer==0 or cbf_num==n_initial_transfer:
              
              label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
-             flow = transfer_client.run_flow(flow_input=base_input,label=label)
+             flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
 
              print('Transfer Flow')
              print("  Local Trigger : " + event_file)
@@ -107,13 +112,20 @@ def KanzusLogic(event_file):
   
              label = f'SSX_Stills_{sample}_{chip_letter}_{new_range}'
 
-             flow = stills_client.run_flow(flow_input=base_input, label=label)
+             flow = stills_flow.run_flow(flow_input=base_input, label=label)
 
              print('Stills Flow')
              print("  Local Trigger : " + event_file)
              print("  Range : " + base_input["input"]["input_range"])
              print("  UUID : " + flow['action_id'])
              print('')
+
+
+
+    #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
+    proc_pattern = r'(\w+)\/(\w+)\/(\w_proc)\/(\w+)_(\d+)_(\d+).cbf'
+    cbf_parse = re.match(cbf_num_pattern, event_file)
+
 
 #       if cbf_num%n_batch_prime==0:                                                                        
 #             subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
@@ -133,7 +145,7 @@ def KanzusLogic(event_file):
 
 
 @generate_flow_definition
-class TransferClient(GladierBaseClient):
+class TransferFlow(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.TransferOut',
     ]
@@ -144,7 +156,7 @@ class TransferClient(GladierBaseClient):
     'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
     'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
-class StillsClient(GladierBaseClient):
+class StillsFlow(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
@@ -153,6 +165,13 @@ class StillsClient(GladierBaseClient):
         'gladier_kanzus.tools.SSXPlot',
         'gladier_tools.publish.Publish',
         'gladier_kanzus.tools.TransferImage',
+    ]
+
+@generate_flow_definition
+class PrimeFlow(GladierBaseClient):
+    gladier_tools = [
+        'gladier_kanzus.tools.Prime',
+        'gladier_kanzus.tools.TransferPrime',
     ]
 
 def create_ranges(start,end,delta):
@@ -195,8 +214,8 @@ if __name__ == '__main__':
     data_dir = args.datadir
     
     ##Process endpoints (theta - raf)
-    head_funcx_ep      = 'e449e8b8-e114-4659-99af-a7de06feb847'
-    queue_funcx_ep     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
+    funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
+    funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
         
 
     ##Transfer endpoints
@@ -216,8 +235,8 @@ if __name__ == '__main__':
             "beamy": "218.200",
 
             # funcX endpoints
-            "funcx_endpoint_non_compute": head_funcx_ep,
-            "funcx_endpoint_compute": queue_funcx_ep,
+            "funcx_endpoint_non_compute": funcx_endpoint_non_compute,
+            "funcx_endpoint_compute": funcx_endpoint_compute,
 
             # globus endpoints
             "globus_local_ep": beamline_globus_ep,
@@ -229,9 +248,9 @@ if __name__ == '__main__':
         }
     }
 
-    transfer_client = TransferClient()
-    stills_client = StillsClient()
-#    prime_client = PrimeClient()
+    data_transfer_flow = TransferFlow()
+    stills_flow = StillsFlow()
+    prime_flow = PrimeFlow()
 
 
     os.chdir(local_dir)
