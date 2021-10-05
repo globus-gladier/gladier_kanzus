@@ -167,7 +167,7 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
             'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
             # Extra groups can be specified here. The SSX Admin group will always
             # be provided automatically.
-            'groups': [args.group] if args.group else [],
+            'groups': [],
         },
     }
 
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  512
+    n_batch_plot =  256
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
