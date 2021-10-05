@@ -1,4 +1,5 @@
-#!/net/prog64/EMAN2/eman2.9/envs/gladier/bin/python
+#!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
+#net/prog64/EMAN2/eman2.9/envs/gladier/bin/python
 
 import time, argparse, os, re
 from pprint import pprint
@@ -57,17 +58,29 @@ def KanzusLogic(event_file):
     #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
     cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
     cbf_parse = re.match(cbf_num_pattern, event_file)
+    #print(cbf_parse)
+    #print(event_file)
 
-    if cbf_parse is not None:
-
+#    if cbf_parse is not None:
+    if '.cbf' in event_file:
         exp_path = base_input["input"]["base_local_dir"]
-        exp = cbf_parse.group(1)
-        sample = cbf_parse.group(2)
-        chip_letter = cbf_parse.group(3)
-        chip_name = cbf_parse.group(4)
-        run_num = int(cbf_parse.group(5)) 
-        cbf_num = int(cbf_parse.group(6))
-
+        #exp = cbf_parse.group(1)
+        #sample = cbf_parse.group(2)
+        #chip_letter = cbf_parse.group(3)
+        #chip_name = cbf_parse.group(4)
+        #run_num = int(cbf_parse.group(5)) 
+        #cbf_num = int(cbf_parse.group(6))
+        exp = event_file.split('/')[-4]
+        sample = event_file.split('/')[-3]
+        chip_letter = event_file.split('/')[-2]
+        filename = event_file.split('/')[-1]
+        chip_name = filename.split('_')[0]
+        run_num = int(filename.split('_')[1])
+        try:
+            cbf_num = int(filename.split('_')[2].replace(".cbf",""))
+        except:
+            return
+        #print(cbf_num)
         # ##LOCAL processing dirs
         local_dir = os.path.join(exp_path, sample, chip_letter)
         base_input["input"]["local_dir"] = local_dir
@@ -84,7 +97,9 @@ def KanzusLogic(event_file):
 
        
         ## triggers for data transfer BEAMLINE >> THETA
-        n_initial_transfer = 512
+        n_initial_transfer = 128
+
+        #n_batch_transfer = 512
         n_batch_transfer = 2048
 
         ## triggers for stills batch procces (THETA)
@@ -101,6 +116,7 @@ def KanzusLogic(event_file):
              print('Transfer Flow')
              print("  Local Trigger : " + event_file)
              print("  UUID : " + flow['action_id'])
+             print("  URL : https://app.globus.org/runs/" + flow['action_id'])
              print('')
 
         if cbf_num%n_batch_stills==0:
@@ -109,7 +125,7 @@ def KanzusLogic(event_file):
 
              base_input["input"]["input_files"]=f"{chip_name}_{run_num}_{new_range}.cbf"
              base_input["input"]["input_range"]=new_range[1:-1]
-  
+             #base_input["input"]['tar_input'] = 'intfiles.tar'  
              label = f'SSX_Stills_{sample}_{chip_letter}_{new_range}'
 
              flow = stills_flow.run_flow(flow_input=base_input, label=label)
@@ -118,6 +134,7 @@ def KanzusLogic(event_file):
              print("  Local Trigger : " + event_file)
              print("  Range : " + base_input["input"]["input_range"])
              print("  UUID : " + flow['action_id'])
+             print("  URL : https://app.globus.org/runs/" + flow['action_id'])
              print('')
 
 
@@ -152,27 +169,27 @@ class TransferFlow(GladierBaseClient):
 
 
 @generate_flow_definition(modifiers={
-    'funcx_create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
-    'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
-    'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
+    'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
+#    'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
+#    'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
 class StillsFlow(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
-        'gladier_kanzus.tools.SSXGatherData',
         'gladier_kanzus.tools.TransferProc',
-        'gladier_kanzus.tools.SSXPlot',
-        'gladier_tools.publish.Publish',
-        'gladier_kanzus.tools.TransferImage',
+        #'gladier_kanzus.tools.SSXGatherData',
+        #'gladier_kanzus.tools.SSXPlot',
+        #'gladier_tools.publish.Publish',
+        #'gladier_kanzus.tools.TransferImage',
     ]
 
-@generate_flow_definition
-class PrimeFlow(GladierBaseClient):
-    gladier_tools = [
-        'gladier_kanzus.tools.Prime',
-        'gladier_kanzus.tools.TransferPrime',
-    ]
+#@generate_flow_definition
+#class PrimeFlow(GladierBaseClient):
+#    gladier_tools = [
+#        'gladier_kanzus.tools.Prime',
+#        'gladier_kanzus.tools.TransferPrime',
+#    ]
 
 def create_ranges(start,end,delta):
 
@@ -187,6 +204,7 @@ def create_ranges(start,end,delta):
     return proc_range
 
 def register_container():
+    print('registering container')
     ##hacking over container
     from funcx.sdk.client import FuncXClient
     fxc = FuncXClient()
@@ -194,6 +212,7 @@ def register_container():
     cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
     container_name = "dials_v1.simg"
     cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
+    print('container id ', cont_id)
     return fxc.register_function(stills_process, container_uuid=cont_id)
     ##
 
@@ -214,13 +233,17 @@ if __name__ == '__main__':
     data_dir = args.datadir
     
     ##Process endpoints (theta - raf)
-    funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
-    funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
-        
+    #funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
+    #funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
+
+    ##Process endpoints (theta - Ryan)
+    funcx_endpoint_non_compute = '6c4323f4-a062-4551-a883-146a352a43f5'
+    funcx_endpoint_compute     = '9f84f41e-dfb6-4633-97be-b46901e9384c'   
 
     ##Transfer endpoints
-    beamline_globus_ep = 'ff32af54-ebe6-11eb-b467-eb47ba14b5cc'
+    beamline_globus_ep = 'c7e7f102-2166-11ec-8338-9d23a2dd9550'
     eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
+    ssx_eagle_globus_ep ='4340775f-4758-4fd6-a7b1-990f82aef5de'
     theta_globus_ep    = '08925f04-569f-11e7-bef8-22000b9a448b'
 
 
@@ -230,7 +253,7 @@ if __name__ == '__main__':
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
 
-            "nproc": 64,
+            "nproc": 32,
             "beamx": "-214.400",
             "beamy": "218.200",
 
@@ -244,13 +267,16 @@ if __name__ == '__main__':
 	    "globus_dest_ep": theta_globus_ep,
 
             # container hack for stills
-            "funcx_stills_process_funcx_id": register_container()
+            "stills_process_funcx_id": register_container(),
+            
+            # pilot
+            "pilot":{},
         }
     }
 
     data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
-    prime_flow = PrimeFlow()
+ #   prime_flow = PrimeFlow()
 
 
     os.chdir(local_dir)
