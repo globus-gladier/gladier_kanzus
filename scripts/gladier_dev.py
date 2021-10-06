@@ -159,16 +159,15 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
     flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
     flow_input['input']['tar_output'] = str(pathlib.Path(flow_input["input"]["upload_dir"]) / 'ints.tar.gz')
 
-    flow_input['input']['pilot'] = {'pilot': {
-            # This is the directory which will be published to petrel
-            'dataset': flow_input['input']['upload_dir'],
-            'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
-            'project': 'ssx',
-            'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
-            # Extra groups can be specified here. The SSX Admin group will always
-            # be provided automatically.
-            'groups': [],
-        },
+    flow_input['input']['pilot'] = {
+        # This is the directory which will be published to petrel
+        'dataset': flow_input['input']['upload_dir'],
+        'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
+        'project': 'ssx',
+        'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
+        # Extra groups can be specified here. The SSX Admin group will always
+        # be provided automatically.
+        'groups': [],
     }
 
     flow = plot_flow.run_flow(flow_input=base_input,label=label)
@@ -264,11 +263,11 @@ if __name__ == '__main__':
     
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
-    n_batch_transfer = 1024
+    n_batch_transfer = 2048
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  256
+    n_batch_plot =  1024
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
