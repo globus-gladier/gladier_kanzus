@@ -56,8 +56,8 @@ def KanzusLogic(event_file):
     #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
     cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
     cbf_parse = re.match(cbf_num_pattern, event_file)
-    #print(cbf_parse)
-    #print(event_file)
+#    print(cbf_parse)
+#    print(event_file)
 
 #    if cbf_parse is not None:
     if '.cbf' in event_file:
@@ -188,6 +188,7 @@ class TransferFlow(GladierBaseClient):
 
 @generate_flow_definition(modifiers={
     'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
+    'stills_process': {'WaitTime':3600}
 })
 class StillsFlow(GladierBaseClient):
     gladier_tools = [
@@ -264,6 +265,7 @@ if __name__ == '__main__':
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
     n_batch_transfer = 2048
+    n_batch_transfer = 4096
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
@@ -273,12 +275,12 @@ if __name__ == '__main__':
 
 
     ##Process endpoints (theta - raf)
-    #funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
-    #funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
+    funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
+    funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
 
     ##Process endpoints (theta - Ryan)
-    funcx_endpoint_non_compute = '6c4323f4-a062-4551-a883-146a352a43f5'
-    funcx_endpoint_compute     = '9f84f41e-dfb6-4633-97be-b46901e9384c'   
+    #funcx_endpoint_non_compute = '6c4323f4-a062-4551-a883-146a352a43f5'
+    #funcx_endpoint_compute     = '9f84f41e-dfb6-4633-97be-b46901e9384c'   
 
     ##Transfer endpoints
     beamline_globus_ep = 'c7e7f102-2166-11ec-8338-9d23a2dd9550'
