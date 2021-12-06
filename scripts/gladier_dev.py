@@ -265,14 +265,15 @@ if __name__ == '__main__':
             "beamy": "218.200",
 
             # funcX endpoints
-            "funcx_endpoint_non_compute": funcx_endpoint_non_compute,
-            "funcx_endpoint_compute": funcx_endpoint_compute,
+            # Should think of moving those to a cfg with better naming
+            'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
+            'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
 
             # globus endpoints
-            "globus_local_ep": beamline_globus_ep,
-            # "globus_dest_ep": eagle_globus_ep, 
-	        "globus_dest_ep": theta_globus_ep,
-
+            "globus_local_ep": depl_input['input']['beamline_globus_ep'],
+            # "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
+	        "globus_dest_ep": depl_input['input']['theta_globus_ep'],
+    
             # container hack for stills
             "stills_process_funcx_id": register_container(),
         }
@@ -280,7 +281,7 @@ if __name__ == '__main__':
 
     data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
-    plot_flow = PlotAndPublish()
+    plot_flow = PublishFlow()
     # prime_flow = PrimeFlow()
 
     os.chdir(local_dir)
