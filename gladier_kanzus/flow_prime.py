@@ -7,3 +7,4 @@ class PrimeFlow(GladierBaseClient):
         'gladier_kanzus.tools.Prime',
         'gladier_kanzus.tools.TransferPrime',
     ]
+    

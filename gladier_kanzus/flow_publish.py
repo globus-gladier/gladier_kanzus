@@ -14,4 +14,3 @@ class PlotAndPublish(GladierBaseClient):
         'gladier_kanzus.tools.plot.SSXPlot',
         'gladier_tools.publish.Publish',
     ]
-
