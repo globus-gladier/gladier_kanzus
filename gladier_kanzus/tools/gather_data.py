@@ -9,6 +9,7 @@ def ssx_gather_data(**data):
     import shutil
     from zipfile import ZipFile
     trigger_name = data['trigger_name']
+    data_dir = data['data_dir']
     processing_dir = data['proc_dir']
     upload_dir = data['upload_dir']
     tar_input = data['tar_input']
@@ -27,13 +28,13 @@ def ssx_gather_data(**data):
     exp_name, exp_number = match.groups()
 
     # Get processing and image dirs
-    run_dir = os.path.dirname(trigger_name)
+    # run_dir = os.path.dirname(trigger_name)
 
     # Check it exists in case xy search didn't create this one
     if not os.path.exists(processing_dir):
         os.mkdir(processing_dir)
 
-    beamline_file = os.path.join(run_dir, f'beamline_run{exp_number}.json')
+    beamline_file = os.path.join(data_dir, f'beamline_run{exp_number}.json')
     if not os.path.exists(upload_dir):
         os.mkdir(upload_dir)
     shutil.copyfile(beamline_file, os.path.join(upload_dir, os.path.basename(beamline_file)))
