@@ -52,9 +52,10 @@ class Handler(FileSystemEventHandler):
 
 def KanzusLogic(event_file):
     #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
-    cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
-    cbf_parse = re.match(cbf_num_pattern, event_file)
-    print(cbf_parse)
+#    cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
+#    cbf_parse = re.match(cbf_num_pattern, event_file)
+#    print(cbf_parse)
+
     print(event_file)
 
 #    if cbf_parse is not None:
@@ -91,7 +92,7 @@ def KanzusLogic(event_file):
         base_input["input"]["trigger_name"] = event_file
 
         if cbf_num % n_batch_transfer == 0 or cbf_num == n_initial_transfer:
-            start_transfer_flow(event_file, sample, chip_letter, cbf_num)
+            start_transfer_flow(event_file, sample, chip_letter, cbf_num) #this eventually need to be simplified
 
         if cbf_num % n_batch_stills == 0:
             start_stills_flow(event_file, sample, chip_letter, chip_name, run_num, cbf_num)
@@ -102,10 +103,6 @@ def KanzusLogic(event_file):
         # if cbf_num%n_batch_prime==0:                                                                        
             # start_prime_flow(event_file, cbf_num)   
 
-
-    #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
-    # proc_pattern = r'(\w+)\/(\w+)\/(\w_proc)\/(\w+)_(\d+)_(\d+).cbf'
-    # cbf_parse = re.match(cbf_num_pattern, event_file)
 
 def start_transfer_flow(event_file, sample, chip_letter, cbf_num):
     label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
@@ -183,7 +180,6 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
 
 
 def create_ranges(start,end,delta):
-
     s_vec = np.arange(start,end,delta)
     proc_range = []
     for k in s_vec:
@@ -221,6 +217,7 @@ def parse_args():
 
 from gladier_kanzus.deployments import deployment_map
 from gladier_kanzus.flows import TransferFlow
+from gladier_kanzus.flows import BlockTransferFlow
 from gladier_kanzus.flows import StillsFlow
 from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
@@ -277,7 +274,7 @@ if __name__ == '__main__':
         }
     }
 
-    data_transfer_flow = TransferFlow()
+    data_transfer_flow = BlockTransferFlow()
     stills_flow = StillsFlow()
     plot_flow = PublishFlow()
     # prime_flow = PrimeFlow()
