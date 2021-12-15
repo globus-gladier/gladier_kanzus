@@ -7,7 +7,7 @@ from gladier import GladierBaseClient, generate_flow_definition
     'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
     'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
-class PlotAndPublish(GladierBaseClient):
+class PublishFlow(GladierBaseClient):
     gladier_tools = [
         'gladier_kanzus.tools.gather_data.SSXGatherData',
         'gladier_tools.posix.tar.Tar',

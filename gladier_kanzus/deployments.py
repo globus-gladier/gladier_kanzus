@@ -27,6 +27,11 @@ class RafProd(BaseDeployment):
         'funcx_endpoint_compute'     : '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
     }
 
+
+    flow_input = {
+        'input': {}
+    }
+
 class RafPolaris(BaseDeployment):
 
     globus_endpoints = {
@@ -40,6 +45,12 @@ class RafPolaris(BaseDeployment):
         'funcx_endpoint_non_compute' : 'e449e8b8-e114-4659-99af-a7de06feb847',
         'funcx_endpoint_compute'     : 'a93b6438-6ff7-422e-a1a2-9a4c6d9c1ea5'
     }
+
+
+    flow_input = {
+        'input': {}
+    }
+
 
 class RyanProd(BaseDeployment):
 
@@ -59,5 +70,6 @@ class RyanProd(BaseDeployment):
 
 deployment_map = {
     'raf-prod': RafProd(),
+    'raf-polaris' : RafPolaris(),
     'ryan-prod': RyanProd(),
 }

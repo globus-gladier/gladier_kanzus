@@ -54,8 +54,8 @@ def KanzusLogic(event_file):
     #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
     cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
     cbf_parse = re.match(cbf_num_pattern, event_file)
-#    print(cbf_parse)
-#    print(event_file)
+    print(cbf_parse)
+    print(event_file)
 
 #    if cbf_parse is not None:
     if '.cbf' in event_file:
@@ -222,7 +222,7 @@ def parse_args():
 from gladier_kanzus.deployments import deployment_map
 from gladier_kanzus.flows import TransferFlow
 from gladier_kanzus.flows import StillsFlow
-from gladier_kanzus.flows import PlotAndPublish
+from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
 
 
@@ -250,8 +250,6 @@ if __name__ == '__main__':
         raise ValueError(f'Invalid Deployment, deployments available: {list(deployment_map.keys())}')
 
     depl_input = depl.get_input()
-
-
 
 
     base_input = {
