@@ -140,3 +140,4 @@ cython_debug/
 # Gladier things
 gladier.cfg
 *.cfg
+*.simg

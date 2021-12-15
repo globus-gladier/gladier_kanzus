@@ -34,11 +34,3 @@ class TransferOut(GladierBaseTool):
     flow_input = {
         'transfer_sync_level': 'checksum'
     }
-    # required_input = [
-    #     'transfer_source_path',
-    #     'transfer_destination_path',
-    #     'transfer_source_endpoint_id',
-    #     'transfer_destination_endpoint_id',
-    #     'transfer_recursive',
-    # ]
-
