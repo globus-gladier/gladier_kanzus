@@ -27,11 +27,19 @@ class RafProd(BaseDeployment):
         'funcx_endpoint_compute'     : '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
     }
 
-    # flow_input = {
-    #     'input': {
-    #         'staging_dir': '/eagle/APSDataAnalysis/XPCS_test/cooley_raf',
-    #     }
-    # }
+class RafPolaris(BaseDeployment):
+
+    globus_endpoints = {
+    'beamline_globus_ep' : 'c7e7f102-2166-11ec-8338-9d23a2dd9550',
+    'eagle_globus_ep' : '05d2c76a-e867-4f67-aa57-76edeb0beda0',
+    'theta_globus_ep': '08925f04-569f-11e7-bef8-22000b9a448b',
+    'ssx_eagle_globus_ep' :'4340775f-4758-4fd6-a7b1-990f82aef5de'
+    }
+
+    funcx_endpoints = {
+        'funcx_endpoint_non_compute' : 'e449e8b8-e114-4659-99af-a7de06feb847',
+        'funcx_endpoint_compute'     : 'a93b6438-6ff7-422e-a1a2-9a4c6d9c1ea5'
+    }
 
 class RyanProd(BaseDeployment):
 
