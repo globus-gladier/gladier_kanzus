@@ -220,10 +220,10 @@ def parse_args():
     return parser.parse_args()
 
 from gladier_kanzus.deployments import deployment_map
-from gladier_kanzus.flow_data_transfer import TransferFlow
-from gladier_kanzus.flow_stills import StillsFlow
-from gladier_kanzus.flow_publish import PublishFlow
-from gladier_kanzus.flow_prime import PrimeFlow
+from gladier_kanzus.flows import TransferFlow
+from gladier_kanzus.flows import StillsFlow
+from gladier_kanzus.flows import PlotAndPublish
+from gladier_kanzus.flows import PrimeFlow
 
 
 

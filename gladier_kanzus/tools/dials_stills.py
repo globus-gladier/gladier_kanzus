@@ -3,7 +3,6 @@ from gladier import GladierBaseTool, generate_flow_definition
 def stills_process(**data):
     import os
     import subprocess
-    from distutils.dir_util import copy_tree
     from subprocess import PIPE
 
     
