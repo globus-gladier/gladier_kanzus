@@ -1,4 +1,5 @@
 #!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
+
 import pathlib
 import time, argparse, os, re
 import numpy as np
@@ -157,21 +158,21 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
  
-# def start_prime_flow(event_file, cbf_num, cbf_base):
-#     subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
-#     new_range = subranges[0]                                                                        
-#     base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
-#     base_input["input"]["input_range"]=new_range[1:-1]                                              
+def start_prime_flow(event_file, cbf_num, cbf_base):
+    subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
+    new_range = subranges[0]                                                                        
+    base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
+    base_input["input"]["input_range"]=new_range[1:-1]                                              
                                                                                                             
-#     label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
+    label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
                                                                                                             
-#     flow = prime_client.run_flow(flow_input=base_input, label=label)                               
+    flow = prime_client.run_flow(flow_input=base_input, label=label)                               
                                                                                                             
-#     print('Prime Flow')                                                                            
-#     print("  Local Trigger : " + event_file)                                                        
-#     print("  Range : " + base_input["input"]["input_range"])                                        
-#     print("  UUID : " + flow['action_id'])
-#     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    print('Prime Flow')                                                                            
+    print("  Local Trigger : " + event_file)                                                        
+    print("  Range : " + base_input["input"]["input_range"])                                        
+    print("  UUID : " + flow['action_id'])
+    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
 
 
@@ -230,11 +231,14 @@ if __name__ == '__main__':
 
     local_dir = args.localdir
     data_dir = args.datadir
+
+    #logfile = 'flow_run_log'
+
+    
     
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
     n_batch_transfer = 2048
-    n_batch_transfer = 4096
     # triggers for stills batch procces (THETA)
     n_batch_stills = 512
     # triggers for prime batch procces (THETA)
@@ -274,10 +278,10 @@ if __name__ == '__main__':
         }
     }
 
-    data_transfer_flow = BlockTransferFlow()
+    data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
     plot_flow = PublishFlow()
-    # prime_flow = PrimeFlow()
+    prime_flow = PrimeFlow()
 
     os.chdir(local_dir)
 

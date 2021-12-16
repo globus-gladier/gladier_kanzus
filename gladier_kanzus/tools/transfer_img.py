@@ -14,6 +14,7 @@ class TransferImage(GladierBaseTool):
       "Parameters": {
         "source_endpoint_id.$": "$.input.globus_dest_ep", 
         "destination_endpoint_id.$": "$.input.globus_local_ep",
+        "sync_level": 1,
         "transfer_items": [
           {
             "source_path.$": "$.input.upload_dir",
@@ -29,6 +30,4 @@ class TransferImage(GladierBaseTool):
         }
     }
 
-    flow_input = {
-        'transfer_sync_level': 'checksum'
-    }
+    flow_input = {}

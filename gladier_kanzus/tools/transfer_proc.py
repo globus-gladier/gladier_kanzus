@@ -30,6 +30,4 @@ class TransferProc(GladierBaseTool):
         }
     }
 
-    flow_input = {
-        'transfer_sync_level': 'checksum'
-    }
+    flow_input = {}
