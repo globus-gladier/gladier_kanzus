@@ -56,7 +56,7 @@ def KanzusLogic(event_file):
 #    cbf_parse = re.match(cbf_num_pattern, event_file)
 #    print(cbf_parse)
 
-    print(event_file)
+#    print(event_file)
 
 #    if cbf_parse is not None:
     if '.cbf' in event_file:
