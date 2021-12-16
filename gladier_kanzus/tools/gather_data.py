@@ -52,7 +52,7 @@ def ssx_gather_data(**data):
             int_indices.append(int(int_index))
         else:
             # match idx-Kaleidoscope_15_00001_datablock.json
-            cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
+            cbf_match = re.match(r'idx-\w+_\d+_(\d+)_imported.expt', filename)
             if cbf_match:
                 cbf_index = int(cbf_match.groups()[0])
                 cbf_indices.append(cbf_index)
