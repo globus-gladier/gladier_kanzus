@@ -198,7 +198,7 @@ def register_container():
     
     print('registering container')
     cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
-    container_name = "dials_v1.simg"
+    container_name = "dials_v3.simg"
 
     cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
     print('container id ', cont_id)
@@ -236,9 +236,9 @@ if __name__ == '__main__':
     n_batch_transfer = 2048
     n_batch_transfer = 4096
     # triggers for stills batch procces (THETA)
-    n_batch_stills = 256
+    n_batch_stills = 512
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  1024
+    n_batch_plot =  2048
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
@@ -255,7 +255,7 @@ if __name__ == '__main__':
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
 
-            "nproc": 32,
+            "nproc": 16,
             "beamx": "-214.400",
             "beamy": "218.200",
 
