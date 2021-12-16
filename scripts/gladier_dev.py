@@ -256,7 +256,7 @@ if __name__ == '__main__':
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
 
-            "nproc": 16,
+            "nproc": 32,
             "beamx": "-214.400",
             "beamy": "218.200",
 
