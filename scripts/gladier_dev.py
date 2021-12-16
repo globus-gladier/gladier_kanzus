@@ -232,15 +232,12 @@ if __name__ == '__main__':
     local_dir = args.localdir
     data_dir = args.datadir
 
-    #logfile = 'flow_run_log'
-
-    
     
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
     n_batch_transfer = 2048
     # triggers for stills batch procces (THETA)
-    n_batch_stills = 512
+    n_batch_stills = 256
     # triggers for prime batch procces (THETA)
     n_batch_plot =  2048
     # triggers for prime batch procces (THETA)
@@ -259,7 +256,7 @@ if __name__ == '__main__':
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
 
-            "nproc": 16,
+            "nproc": 32,
             "beamx": "-214.400",
             "beamy": "218.200",
 
