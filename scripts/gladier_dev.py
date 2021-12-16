@@ -57,7 +57,7 @@ def KanzusLogic(event_file):
 #    cbf_parse = re.match(cbf_num_pattern, event_file)
 #    print(cbf_parse)
 
-    print(event_file)
+#    print(event_file)
 
 #    if cbf_parse is not None:
     if '.cbf' in event_file:
@@ -241,9 +241,9 @@ if __name__ == '__main__':
     n_batch_transfer = 2048
     n_batch_transfer = 4096
     # triggers for stills batch procces (THETA)
-    n_batch_stills = 256
+    n_batch_stills = 512
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  1024
+    n_batch_plot =  2048
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
@@ -260,7 +260,7 @@ if __name__ == '__main__':
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
 
-            "nproc": 32,
+            "nproc": 16,
             "beamx": "-214.400",
             "beamy": "218.200",
 

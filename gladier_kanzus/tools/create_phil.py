@@ -71,6 +71,7 @@ significance_filter.enable=True
 #significance_filter.isigi_cutoff=1.0
 mp.nproc = $nproc
 mp.method=multiprocessing
+output.composite_output=False
 refinement.parameterisation.detector.fix=none
 geometry {
   detector {
