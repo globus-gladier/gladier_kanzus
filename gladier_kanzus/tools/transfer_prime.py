@@ -1,13 +1,13 @@
 from gladier import GladierBaseTool
 
 
-class TransferPrimec(GladierBaseTool):
+class TransferPrime(GladierBaseTool):
 
     flow_definition = {
         'Comment': 'Transfer a file or directory in Globus',
         'StartAt': 'TransferPrime',
         'States': {
-            "TransferProc": {
+            "TransferPrime": {
       "Comment": "Prime back transfer",
       "Type": "Action",
       "ActionUrl": "https://actions.automate.globus.org/transfer/transfer",
