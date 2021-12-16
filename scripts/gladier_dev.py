@@ -1,4 +1,5 @@
 #!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
+
 import pathlib
 import time, argparse, os, re
 import numpy as np
@@ -198,7 +199,7 @@ def register_container():
     
     print('registering container')
     cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
-    container_name = "dials_v1.simg"
+    container_name = "dials_v3.simg"
 
     cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
     print('container id ', cont_id)
@@ -230,6 +231,10 @@ if __name__ == '__main__':
 
     local_dir = args.localdir
     data_dir = args.datadir
+
+    #logfile = 'flow_run_log'
+
+    
     
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
