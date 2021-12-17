@@ -1,4 +1,3 @@
-import datetime
 from gladier import GladierBaseTool, generate_flow_definition
 
 
@@ -57,8 +56,9 @@ def ssx_gather_data(**data):
         #     if cbf_match:
         #         cbf_index = int(cbf_match.groups()[0])
         #         cbf_indices.append(cbf_index)
-        if '.log' in filename:
-            with open(filename,'r') as f:
+        if '.txt' in filename:
+            fpath = os.path.join(processing_dir,filename)
+            with open(fpath,'r') as f:
                 for line in f.readlines():
                     match = re.findall(r"(\d+).cbf", line)
                     if match:
@@ -67,7 +67,16 @@ def ssx_gather_data(**data):
     
     if len(cbf_indices) == 0:
         cbf_indices.append(0)
+   
+    proc_cbf_file = os.path.join(processing_dir,'proc_cbf.txt')
     
+    if os.path.exists(proc_cbf_file):
+        os.remove(proc_cbf_file)
+
+    with open(proc_cbf_file,'w+') as f:
+        for cbf in sorted(cbf_indices):
+            f.write(str(cbf) + "\n")
+
     batch_info = {
         'cbf_files': len(cbf_indices),
         'cbf_file_range': {'from': min(cbf_indices), 'to': max(cbf_indices)},
