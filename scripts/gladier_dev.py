@@ -157,7 +157,7 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
         'groups': [],
     }
 
-    flow = plot_flow.run_flow(flow_input=base_input,label=label)
+    flow = plot_flow.run_flow(flow_input=flow_input,label=label)
 
     print('Plot and Publish Flow')
     print("  Local Trigger : " + event_file)

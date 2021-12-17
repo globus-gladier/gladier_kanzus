@@ -1,0 +1,75 @@
+import os
+import argparse
+import pathlib
+
+
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--localchip', type=str, default='.')
+    parser.add_argument('--datadir', type=str, default='/APSDataAnalysis/SSX/random_start')
+    parser.add_argument('--deployment','-d', default='raf-prod', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
+    return parser.parse_args()
+
+from gladier_kanzus.deployments import deployment_map
+from gladier_kanzus.flows import PublishFlow
+
+def start_plot_flow():
+    label = f'SSX_Republish_Publish_{sample}_{chip_letter}'
+    flow_input = base_input.copy()
+
+    flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
+    flow_input['input']['tar_output'] = str(pathlib.Path(flow_input["input"]["upload_dir"]) / 'ints.tar.gz')
+
+    flow_input['input']['pilot'] = {
+        # This is the directory which will be published to petrel
+        'dataset': flow_input['input']['upload_dir'],
+        'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
+        'project': 'ssx',
+        'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
+        # Extra groups can be specified here. The SSX Admin group will always
+        # be provided automatically.
+        'groups': [],
+    }
+
+    flow = plot_flow.run_flow(flow_input=flow_input,label=label)
+
+    print('Plot and Publish Flow')
+    print("  Local Trigger : " + event_file)
+    print("  UUID : " + flow['action_id'])
+    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+
+if __name__ == '__main__':
+
+    args = parse_args()
+
+    localchip = args.localchip
+    data_dir = args.datadir
+
+    depl = deployment_map.get(args.deployment)
+    if not depl:
+        raise ValueError(f'Invalid Deployment, deployments available: {list(deployment_map.keys())}')
+
+    depl_input = depl.get_input()
+
+    base_input = {
+        "input": {
+            #Processing variables
+            "base_data_dir": data_dir,
+
+            # funcX endpoints
+            # Should think of moving those to a cfg with better naming
+            'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
+            'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
+
+            # globus endpoints
+            "globus_local_ep": depl_input['input']['beamline_globus_ep'],
+            # "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
+	        "globus_dest_ep": depl_input['input']['theta_globus_ep'],
+    
+        }
+    }
+
+    plot_flow = PublishFlow()
+
