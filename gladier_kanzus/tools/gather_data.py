@@ -1,4 +1,3 @@
-import datetime
 from gladier import GladierBaseTool, generate_flow_definition
 
 
@@ -50,16 +49,34 @@ def ssx_gather_data(**data):
             int_filenames.append(filename)
             int_number, exp_name, beamline_run, int_index = int_match.groups()
             int_indices.append(int(int_index))
-        else:
-            # match idx-Kaleidoscope_15_00001_datablock.json
-            cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
-            if cbf_match:
-                cbf_index = int(cbf_match.groups()[0])
-                cbf_indices.append(cbf_index)
+        # else:
+        #     match idx-Kaleidoscope_15_00001_datablock.json
+        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
+        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
+        #     if cbf_match:
+        #         cbf_index = int(cbf_match.groups()[0])
+        #         cbf_indices.append(cbf_index)
+        if '.txt' in filename:
+            fpath = os.path.join(processing_dir,filename)
+            with open(fpath,'r') as f:
+                for line in f.readlines():
+                    match = re.findall(r"(\d+).cbf", line)
+                    if match:
+                        cbf_index = int(match[0])
+                        cbf_indices.append(cbf_index)
     
     if len(cbf_indices) == 0:
         cbf_indices.append(0)
+   
+    proc_cbf_file = os.path.join(processing_dir,'proc_cbf.txt')
     
+    if os.path.exists(proc_cbf_file):
+        os.remove(proc_cbf_file)
+
+    with open(proc_cbf_file,'w+') as f:
+        for cbf in sorted(cbf_indices):
+            f.write(str(cbf) + "\n")
+
     batch_info = {
         'cbf_files': len(cbf_indices),
         'cbf_file_range': {'from': min(cbf_indices), 'to': max(cbf_indices)},

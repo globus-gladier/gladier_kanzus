@@ -1,12 +1,11 @@
 #!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
+
 import pathlib
 import time, argparse, os, re
-from pprint import pprint
 import numpy as np
 #from watchdog.observers import Observer
 from watchdog.observers.polling import PollingObserver as Observer
 from watchdog.events import FileSystemEventHandler
-from gladier import GladierBaseClient, generate_flow_definition
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -54,9 +53,10 @@ class Handler(FileSystemEventHandler):
 
 def KanzusLogic(event_file):
     #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
-    cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
-    cbf_parse = re.match(cbf_num_pattern, event_file)
+#    cbf_num_pattern = r'(\w+)\/(\w+)\/(\w+)\/(\w+)_(\d+)_(\d+).cbf'
+#    cbf_parse = re.match(cbf_num_pattern, event_file)
 #    print(cbf_parse)
+
 #    print(event_file)
 
 #    if cbf_parse is not None:
@@ -93,7 +93,7 @@ def KanzusLogic(event_file):
         base_input["input"]["trigger_name"] = event_file
 
         if cbf_num % n_batch_transfer == 0 or cbf_num == n_initial_transfer:
-            start_transfer_flow(event_file, sample, chip_letter, cbf_num)
+            start_transfer_flow(event_file, sample, chip_letter, cbf_num) #this eventually need to be simplified
 
         if cbf_num % n_batch_stills == 0:
             start_stills_flow(event_file, sample, chip_letter, chip_name, run_num, cbf_num)
@@ -105,23 +105,12 @@ def KanzusLogic(event_file):
             # start_prime_flow(event_file, cbf_num)   
 
 
-    #cbf_num_pattern = r'(\w+_\d+_)(\d+).cbf' ##old pattern
-    # proc_pattern = r'(\w+)\/(\w+)\/(\w_proc)\/(\w+)_(\d+)_(\d+).cbf'
-    # cbf_parse = re.match(cbf_num_pattern, event_file)
+def start_transfer_flow(event_file, sample, chip_letter, cbf_num):
+    label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
+    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
 
-def start_prime_flow(event_file, cbf_num, cbf_base):
-    subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
-    new_range = subranges[0]                                                                        
-    base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
-    base_input["input"]["input_range"]=new_range[1:-1]                                              
-                                                                                                            
-    label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
-                                                                                                            
-    flow = prime_client.run_flow(flow_input=base_input, label=label)                               
-                                                                                                            
-    print('Prime Flow')                                                                            
-    print("  Local Trigger : " + event_file)                                                        
-    print("  Range : " + base_input["input"]["input_range"])                                        
+    print('Transfer Flow')
+    print("  Local Trigger : " + event_file)
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
@@ -143,14 +132,6 @@ def start_stills_flow(event_file, sample, chip_letter, chip_name, run_num, cbf_n
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
-def start_transfer_flow(event_file, sample, chip_letter, cbf_num):
-    label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
-    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
-
-    print('Transfer Flow')
-    print("  Local Trigger : " + event_file)
-    print("  UUID : " + flow['action_id'])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
 def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
     label = f'SSX_Plot_{sample}_{chip_letter}_{cbf_num}'
@@ -177,50 +158,29 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
  
+def start_prime_flow(event_file, cbf_num, cbf_base):
+    subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
+    new_range = subranges[0]                                                                        
+    base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
+    base_input["input"]["input_range"]=new_range[1:-1]                                              
+                                                                                                            
+    label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
+                                                                                                            
+    flow = prime_client.run_flow(flow_input=base_input, label=label)                               
+                                                                                                            
+    print('Prime Flow')                                                                            
+    print("  Local Trigger : " + event_file)                                                        
+    print("  Range : " + base_input["input"]["input_range"])                                        
+    print("  UUID : " + flow['action_id'])
+    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
 
-@generate_flow_definition
-class TransferFlow(GladierBaseClient):
-    gladier_tools = [
-        'gladier_kanzus.tools.TransferOut',
-    ]
 
 
-@generate_flow_definition(modifiers={
-    'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
-    'stills_process': {'WaitTime':3600}
-})
-class StillsFlow(GladierBaseClient):
-    gladier_tools = [
-        'gladier_kanzus.tools.CreatePhil',
-        'gladier_kanzus.tools.DialsStills',
-        'gladier_kanzus.tools.TransferProc',
-    ]
 
 
-@generate_flow_definition(modifiers={
-    'tar': {'endpoint': 'funcx_endpoint_non_compute'},
-    'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
-    'publish_gather_metadata': {'WaitTime': 120, 'payload': '$.SsxGatherData.details.result[0].pilot'},
-})
-class PlotAndPublish(GladierBaseClient):
-    gladier_tools = [
-        'gladier_kanzus.tools.gather_data.SSXGatherData',
-        'gladier_tools.posix.tar.Tar',
-        'gladier_kanzus.tools.plot.SSXPlot',
-        'gladier_tools.publish.Publish',
-    ]
-
-
-#@generate_flow_definition
-#class PrimeFlow(GladierBaseClient):
-#    gladier_tools = [
-#        'gladier_kanzus.tools.Prime',
-#        'gladier_kanzus.tools.TransferPrime',
-#    ]
 
 def create_ranges(start,end,delta):
-
     s_vec = np.arange(start,end,delta)
     proc_range = []
     for k in s_vec:
@@ -239,7 +199,7 @@ def register_container():
     
     print('registering container')
     cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
-    container_name = "dials_v1.simg"
+    container_name = "dials_v3.simg"
 
     cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
     print('container id ', cont_id)
@@ -253,7 +213,17 @@ def parse_args():
     parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
         default='/APSDataAnalysis/SSX/random_start')
+    parser.add_argument('--deployment','-d', default='raf-prod', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
     return parser.parse_args()
+
+from gladier_kanzus.deployments import deployment_map
+from gladier_kanzus.flows import TransferFlow
+from gladier_kanzus.flows import BlockTransferFlow
+from gladier_kanzus.flows import StillsFlow
+from gladier_kanzus.flows import PublishFlow
+from gladier_kanzus.flows import PrimeFlow
+
+
 
 if __name__ == '__main__':
 
@@ -261,32 +231,24 @@ if __name__ == '__main__':
 
     local_dir = args.localdir
     data_dir = args.datadir
+
     
     # triggers for data transfer BEAMLINE >> THETA
     n_initial_transfer = 128
     n_batch_transfer = 2048
-    n_batch_transfer = 4096
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  1024
+    n_batch_plot =  2048
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
+    depl = deployment_map.get(args.deployment)
+    if not depl:
+        raise ValueError(f'Invalid Deployment, deployments available: {list(deployment_map.keys())}')
 
-    ##Process endpoints (theta - raf)
-    funcx_endpoint_non_compute = 'e449e8b8-e114-4659-99af-a7de06feb847'
-    funcx_endpoint_compute     = '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
+    depl_input = depl.get_input()
 
-    ##Process endpoints (theta - Ryan)
-    #funcx_endpoint_non_compute = '6c4323f4-a062-4551-a883-146a352a43f5'
-    #funcx_endpoint_compute     = '9f84f41e-dfb6-4633-97be-b46901e9384c'   
-
-    ##Transfer endpoints
-    beamline_globus_ep = 'c7e7f102-2166-11ec-8338-9d23a2dd9550'
-    eagle_globus_ep    = '05d2c76a-e867-4f67-aa57-76edeb0beda0'
-    ssx_eagle_globus_ep ='4340775f-4758-4fd6-a7b1-990f82aef5de'
-    theta_globus_ep    = '08925f04-569f-11e7-bef8-22000b9a448b'
 
     base_input = {
         "input": {
@@ -299,14 +261,15 @@ if __name__ == '__main__':
             "beamy": "218.200",
 
             # funcX endpoints
-            "funcx_endpoint_non_compute": funcx_endpoint_non_compute,
-            "funcx_endpoint_compute": funcx_endpoint_compute,
+            # Should think of moving those to a cfg with better naming
+            'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
+            'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
 
             # globus endpoints
-            "globus_local_ep": beamline_globus_ep,
-            # "globus_dest_ep": eagle_globus_ep, 
-	        "globus_dest_ep": theta_globus_ep,
-
+            "globus_local_ep": depl_input['input']['beamline_globus_ep'],
+            # "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
+	        "globus_dest_ep": depl_input['input']['theta_globus_ep'],
+    
             # container hack for stills
             "stills_process_funcx_id": register_container(),
         }
@@ -314,8 +277,8 @@ if __name__ == '__main__':
 
     data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
-    plot_flow = PlotAndPublish()
-    # prime_flow = PrimeFlow()
+    plot_flow = PublishFlow()
+    prime_flow = PrimeFlow()
 
     os.chdir(local_dir)
 

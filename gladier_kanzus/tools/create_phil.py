@@ -23,9 +23,13 @@ def create_phil(**data):
         return phil_name
         
     unit_cell = data.get('unit_cell', None)
-    
+    beamx = data['beamx']
+    beamy = data['beamy']
+    nproc = data['nproc']
+
     ##opening existing files
     beamline_json = os.path.join(data_dir,f"beamline_run{run_num}.json")
+    xy_json = os.path.join(data_dir,'xy.json')
     mask = os.path.join(data_dir,data.get('mask', 'mask.pickle'))
 
     beamline_data = None
@@ -43,12 +47,21 @@ def create_phil(**data):
     except:
         pass
 
+    try:
+        with open(xy_json, 'r') as fp:
+            xy_data = json.loads(fp.read())
+        beamx = xy_data['beamx']
+        beamy = xy_data['beamy']
+    except:
+        pass
+
+
     template_data = {'det_distance': det_distance,
                      'unit_cell': unit_cell,
-                     'nproc': data['nproc'],
+                     'nproc': nproc,
                      'space_group': space_group,
-                     'beamx': data['beamx'],
-                     'beamy': data['beamy'],
+                     'beamx': beamx,
+                     'beamy': beamy,
                      'mask': mask}
 
     template_phil = Template("""spotfinder.lookup.mask=$mask
@@ -58,6 +71,7 @@ significance_filter.enable=True
 #significance_filter.isigi_cutoff=1.0
 mp.nproc = $nproc
 mp.method=multiprocessing
+output.composite_output=False
 refinement.parameterisation.detector.fix=none
 geometry {
   detector {
