@@ -73,6 +73,7 @@ mp.nproc = $nproc
 mp.method=multiprocessing
 output.composite_output=False
 refinement.parameterisation.detector.fix=none
+debug.output_debug_logs=False
 geometry {
   detector {
       panel {

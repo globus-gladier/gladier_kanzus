@@ -3,7 +3,6 @@ from gladier import GladierBaseClient, generate_flow_definition
 
 
 @generate_flow_definition(modifiers={
-    'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
     'stills_process': {'WaitTime':7200}
 })
 class StillsFlow(GladierBaseClient):
