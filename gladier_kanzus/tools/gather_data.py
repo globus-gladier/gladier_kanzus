@@ -26,16 +26,12 @@ def ssx_gather_data(**data):
         raise ValueError(f'Invalid trigger file: {trigger_file}, must match "Kaleidoscope_15_22016.cbf"')
     exp_name, exp_number = match.groups()
 
-    # Get processing and image dirs
-    # run_dir = os.path.dirname(trigger_name)
 
-    # Check it exists in case xy search didn't create this one
-    if not os.path.exists(processing_dir):
-        os.mkdir(processing_dir)
-
-    beamline_file = os.path.join(data_dir, f'beamline_run{exp_number}.json')
+    
     if not os.path.exists(upload_dir):
         os.mkdir(upload_dir)
+    
+    beamline_file = os.path.join(data_dir, f'beamline_run{exp_number}.json')
     shutil.copyfile(beamline_file, os.path.join(upload_dir, os.path.basename(beamline_file)))
 
     # Fetch the list of ints that 'hit'.
@@ -49,13 +45,7 @@ def ssx_gather_data(**data):
             int_filenames.append(filename)
             int_number, exp_name, beamline_run, int_index = int_match.groups()
             int_indices.append(int(int_index))
-        # else:
-        #     match idx-Kaleidoscope_15_00001_datablock.json
-        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
-        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
-        #     if cbf_match:
-        #         cbf_index = int(cbf_match.groups()[0])
-        #         cbf_indices.append(cbf_index)
+     
         if '.txt' in filename:
             fpath = os.path.join(processing_dir,filename)
             with open(fpath,'r') as f:
@@ -77,6 +67,15 @@ def ssx_gather_data(**data):
         for cbf in sorted(cbf_indices):
             f.write(str(cbf) + "\n")
 
+    proc_ints_file = os.path.join(processing_dir,'proc_ints.txt')
+    
+    if os.path.exists(proc_ints_file):
+        os.remove(proc_ints_file)
+
+    with open(proc_ints_file,'w+') as f:
+        for intfile in sorted(int_filenames):
+            f.write(str(intfile) + "\n")
+            
     batch_info = {
         'cbf_files': len(cbf_indices),
         'cbf_file_range': {'from': min(cbf_indices), 'to': max(cbf_indices)},
