@@ -29,7 +29,7 @@ class KanzusTriggers:
         
         try:
             while True:
-                time.sleep(1)
+                time.sleep(2)
         except:
             self.observer.stop()
             print("Kanzus Triggers Stopped")
@@ -91,6 +91,12 @@ def KanzusLogic(event_file):
         base_input["input"]["proc_dir"] = data_dir + '_proc'
         base_input["input"]["upload_dir"] = os.path.join(base_input["input"]["base_data_dir"], sample, chip_name) + '_images' 
         base_input["input"]["trigger_name"] = event_file
+
+        #if cbf_num == n_initial_transfer:
+        #    time.sleep(180)
+        #    start_transfer_flow(event_file, sample, chip_letter, cbf_num)
+        #    time.sleep(60)
+
 
         if cbf_num % n_batch_transfer == 0 or cbf_num == n_initial_transfer:
             start_transfer_flow(event_file, sample, chip_letter, cbf_num) #this eventually need to be simplified
@@ -177,9 +183,6 @@ def start_prime_flow(event_file, cbf_num, cbf_base):
 
 
 
-
-
-
 def create_ranges(start,end,delta):
     s_vec = np.arange(start,end,delta)
     proc_range = []
@@ -213,7 +216,7 @@ def parse_args():
     parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
         default='/APSDataAnalysis/SSX/random_start')
-    parser.add_argument('--deployment','-d', default='raf-prod', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
+    parser.add_argument('--deployment','-d', default='raf-polaris', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
     return parser.parse_args()
 
 from gladier_kanzus.deployments import deployment_map
@@ -234,12 +237,12 @@ if __name__ == '__main__':
 
     
     # triggers for data transfer BEAMLINE >> THETA
-    n_initial_transfer = 128
-    n_batch_transfer = 2048
+    n_initial_transfer = 100
+    n_batch_transfer = 2000
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  2048
+    n_batch_plot =  3400
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 
