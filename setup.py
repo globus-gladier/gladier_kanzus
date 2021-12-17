@@ -18,7 +18,7 @@ setup(
     url='https://github.com/globus-gladier/gladier-kanzus',
     maintainer='The Gladier Team',
     maintainer_email='',
-    version='0.0.5',
+    version='0.1.0',
     packages=find_packages(),
     install_requires=install_requires,
     scripts=script_list,
