@@ -10,7 +10,7 @@ with open('requirements.txt') as reqs:
             continue
         install_requires.append(req)
 
-script_list = glob('scripts/gladier_*')
+script_list = glob('scripts/kanzus_*')
 
 setup(
     name='gladier-kanzus',
