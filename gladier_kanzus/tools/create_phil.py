@@ -99,6 +99,10 @@ indexing {
         fp.write(phil_data)
     return phil_name
 
-@generate_flow_definition
+modifiers={
+    create_phil: {'endpoint': 'funcx_endpoint_non_compute',
+                           'ExceptionOnActionFailure': True,
+                           }
+}
 class CreatePhil(GladierBaseTool):
     funcx_functions = [create_phil]

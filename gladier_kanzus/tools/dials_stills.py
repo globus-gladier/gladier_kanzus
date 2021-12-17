@@ -31,10 +31,6 @@ def stills_process(**data):
     
     return cmd, str(res.stdout)
 
-@generate_flow_definition(modifiers={
-    stills_process: {'endpoint': 'funcx_endpoint_non_compute',
-                           'ExceptionOnActionFailure': True,
-                           }
-})
+@generate_flow_definition()
 class DialsStills(GladierBaseTool):
     funcx_functions = [stills_process]
