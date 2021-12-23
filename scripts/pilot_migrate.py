@@ -1,9 +1,10 @@
 import json
-import os
+import pathlib
 import datetime
 import globus_sdk
 import click
 import pprint
+from importlib import import_module
 from pilot.client import PilotClient
 pilot_client = PilotClient()
 search_client = pilot_client.get_search_client()
@@ -13,6 +14,13 @@ def get_document_name(base_name):
     index_info = search_client.get_index(pilot_client.get_index())
     date = datetime.datetime.now().isoformat()
     return f'{index_info["display_name"]}-{base_name}-{date}.json'
+
+
+def build_content_map(short_path, content):
+    for file_record in content['files']:
+        file_record['url'] = pilot_client.get_globus_http_url(file_record['url'])
+    return short_path, content
+
 
 
 @click.group()
@@ -51,25 +59,55 @@ def make_migration(backup_doc, migration_doc, verbose):
 
 @cli.command(help='Ingest a migration document to an index')
 @click.argument('migration_doc', type=click.File('r'))
+@click.option('--custom-content-map', type=click.Path(exists=True, dir_okay=False))
+@click.option('--preview-content', is_flag=True, help='Show json for one complete record')
+@click.option('--preview-subjects', is_flag=True, help='Show the first 10 subjects')
 @click.option('--force', is_flag=True, help='Make a mistake even though we warned you not to')
-def migrate(migration_doc, force):
+def migrate(migration_doc, custom_content_map, preview_content, preview_subjects, force):
+    """Migrate accepts a migration doc, and uses the current pilot context/project to build
+    a search ingest document. Migration docs have relative paths for subjects and files, and so
+    pilot is used to build the new paths with the configured base_path"""
     content_map = json.loads(migration_doc.read())
     index_info = search_client.get_index(pilot_client.get_index())
     name = index_info["display_name"]
     click.secho(f'Preparing to ingest {len(content_map)} records into index '
                 f'{name} ({index_info["id"]})')
 
-    for record in content_map.values():
-        for file_record in record['files']:
-            file_record['url'] = pilot_client.get_globus_http_url(file_record['url'])
+    build_content_map_function = build_content_map
+    if custom_content_map:
+        try:
+            mod = import_module(pathlib.Path(custom_content_map).stem)
+            build_content_map_function = getattr(mod, 'build_content_map')
+            click.secho(f'Using custom function: {custom_content_map}', fg='blue')
+        except Exception:
+            raise
+
+    new_content_map = {}
+    for sp, cnt in content_map.items():
+        result = build_content_map_function(sp, cnt)
+        if result is None:
+            click.secho(f'WARNING: Skipping {sp}', fg='yellow')
+            continue
+        short_path, content = result
+        new_content_map[short_path.lstrip('/')] = content
+
+    click.secho('New search content built successfully', fg='green')
+
+    if preview_content:
+        subject, content = list(new_content_map.items())[-1]
+        click.echo(f'Subject: {subject}\nContent: {json.dumps(content, indent=2)}\n')
+
+    if preview_subjects:
+        subjects = '\n'.join(list(new_content_map.keys())[:10])
+        click.echo(f'Subjects: \n{subjects}')
 
     if index_info['num_subjects'] > 1 and not force:
         click.secho(f'WARNING: index {name} contains {index_info["num_subjects"]} subjects, '
                     f'suggest you wipe the index before proceeding', fg='red')
         return
 
-    if click.confirm(f'Ingest {len(content_map)} into {name}?', abort=True):
-        pilot_client.ingest_many(content_map)
+    if click.confirm(f'Ingest {len(new_content_map)} into {name}?', abort=True):
+        pilot_client.ingest_many(new_content_map)
         click.secho('Success', fg='green')
     else:
         click.secho('Aborted', fg='red')
