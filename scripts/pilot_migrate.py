@@ -9,32 +9,42 @@ pilot_client = PilotClient()
 search_client = pilot_client.get_search_client()
 
 
+def get_document_name(base_name):
+    index_info = search_client.get_index(pilot_client.get_index())
+    date = datetime.datetime.now().isoformat()
+    return f'{index_info["display_name"]}-{base_name}-{date}.json'
+
+
 @click.group()
 def cli():
     pass
 
 
 @cli.command(help='Create a local backup of an index')
-def backup():
+@click.argument('backup_doc', type=click.File('w+'), default=get_document_name('backup'))
+def backup(backup_doc):
     """List all entries for a project, save them to the local directory"""
-    entries = pilot_client.list_entries()
-    date = datetime.datetime.now().isoformat()
-    backup_name = f'{pilot_client.get_index()}-{pilot_client.project.current}-backup-{date}.json'
-    with open(backup_name, 'w+') as f:
-        f.write(json.dumps(entries, indent=2))
+    backup_doc.write(json.dumps(pilot_client.list_entries(), indent=2))
+    click.secho(f'Saved {backup_doc.name}', fg='green')
 
 
 @cli.command(help='Create a migration using a backup')
 @click.argument('backup_doc', type=click.File('r'))
-@click.argument('migration_doc', type=click.File('w+'), default='migration.json')
-def make_migration(backup_doc, migration_doc):
+@click.argument('migration_doc', type=click.File('w+'), default=get_document_name('migration'))
+@click.option('--verbose', is_flag=True, help='Provide extra info')
+def make_migration(backup_doc, migration_doc, verbose):
     content_map = {}
     click.secho(f'Creating migration from {backup_doc.name}...')
-    for record in json.loads(backup_doc.read()):
-        content = record['content'][0]
-        for file_record in content['files']:
-            file_record['url'] = pilot_client.get_short_path(file_record['url'])
-        content_map[pilot_client.get_short_path(record['subject'])] = content
+    try:
+        for record in json.loads(backup_doc.read()):
+            content = record['content'][0]
+            for file_record in content['files']:
+                file_record['url'] = pilot_client.get_short_path(file_record['url'])
+            content_map[pilot_client.get_short_path(record['subject'])] = content
+    except Exception:
+        click.secho(f'Failed to read {backup_doc.name}, ensure it is a valid backup doc')
+        if verbose:
+            raise
     migration_doc.write(json.dumps(content_map, indent=2))
     click.secho(f'Saved {migration_doc.name}')
 
@@ -58,17 +68,34 @@ def migrate(migration_doc, force):
                     f'suggest you wipe the index before proceeding', fg='red')
         return
 
-    answer = input(f'Ingest {len(content_map)} into {name}? (y/N)> ')
-    if answer in ['y', 'Y', 'yes', 'YES', 'YEEEEESSS!', 'AHHHH!']:  # Anxiety is normal
+    if click.confirm(f'Ingest {len(content_map)} into {name}?', abort=True):
         pilot_client.ingest_many(content_map)
         click.secho('Success', fg='green')
     else:
         click.secho('Aborted', fg='red')
 
 
-
-
-
+@cli.command(help='Destroy all subjects within an index')
+def wipe():
+    """This will delete all search results, but preserve the project_metadata"""
+    project = pilot_client.project.current
+    results = pilot_client.search(project=project)
+    index_info = search_client.get_index(pilot_client.get_index())
+    search_query = {
+        'q': '*',
+        'filters': {
+            'field_name': 'project_metadata.project-slug',
+            'type': 'match_all',
+            'values': [project or pilot_client.project.current]
+        }
+    }
+    dz = '\n{}\nDANGER ZONE\n{}'.format('/' * 80, '/' * 80)
+    click.secho(
+        f'{dz}\n'
+        f'This will delete all {results["total"]} search results in index {index_info["display_name"]}.'
+        f'{dz}\n', bg='red')
+    if click.confirm('Are you sure you wish to continue?'):
+        search_client.delete_by_query(index_info['id'], search_query)
 
 
 if __name__ == '__main__':
