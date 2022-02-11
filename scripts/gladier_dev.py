@@ -242,7 +242,7 @@ if __name__ == '__main__':
     # triggers for stills batch procces (THETA)
     n_batch_stills = 256
     # triggers for prime batch procces (THETA)
-    n_batch_plot =  3400
+    n_batch_plot =  3400/4
     # triggers for prime batch procces (THETA)
     n_batch_prime =  10000
 

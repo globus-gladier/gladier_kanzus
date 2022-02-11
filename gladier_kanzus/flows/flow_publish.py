@@ -3,7 +3,7 @@ from gladier import GladierBaseClient, generate_flow_definition
 
 
 @generate_flow_definition(modifiers={
-    'tar': {'endpoint': 'funcx_endpoint_non_compute'},
+    'tar': {'endpoint': 'funcx_endpoint_non_compute', 'WaitTime': 3600},
     'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
     'publish_gather_metadata': {'WaitTime': 240, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
