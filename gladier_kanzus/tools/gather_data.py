@@ -6,7 +6,6 @@ def ssx_gather_data(**data):
     import os
     import json
     import shutil
-    from zipfile import ZipFile
     trigger_name = data['trigger_name']
     data_dir = data['data_dir']
     processing_dir = data['proc_dir']
@@ -121,8 +120,8 @@ def ssx_gather_data(**data):
 @generate_flow_definition(modifiers={
     'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'}
 })
-class SSXGatherData(GladierBaseTool):
 
+class SSXGatherData(GladierBaseTool):
     flow_input = {
         'metadata': {
             "description": "Automated data processing.",

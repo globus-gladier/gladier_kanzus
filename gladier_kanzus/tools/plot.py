@@ -2,7 +2,12 @@ from typing import List
 from gladier import GladierBaseTool, generate_flow_definition
 
 
-def ssx_plot(x_num_steps=0, y_num_steps=0, int_indices=[], plot_filename='composite.png'):
+#def ssx_plot(x_num_steps=0, y_num_steps=0, int_indices=[], plot_filename='composite.png'):
+def ssx_plot(**data):
+    x_num_steps = data.get('x_num_steps',0)
+    y_num_steps = data.get('y_num_steps',0)
+    int_indices = data.get('int_indices',[])
+    plot_filename = data.get('plot_filename','composite.png')
     """
     Plot the current list of ints so far. Data requires the following keys
         * x_num_steps (int) X dimension for the plot
