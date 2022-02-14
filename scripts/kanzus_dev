@@ -72,12 +72,12 @@ def KanzusLogic(event_file):
 
     if '.cbf' in event_file:
         event = parse_cbf_event(event_file)
-        print(event)
+        #print(event)
 
     #    # LOCAL processing dirs
     #    exp_path = base_input["input"]["base_local_dir"]
     #    local_dir = os.path.join(exp_path, event['sample'], event['chip_letter'])
-    #    base_input["input"]["local_dir"] = local_dir
+        base_input["input"]["local_dir"] = os.path.dirname(event_file)
     #    base_input["input"]["local_proc_dir"] = local_dir + '_proc'
     #    base_input["input"]["local_prime_dir"] = os.path.join(exp_path, sample, chip_name) + '_images'
     #    base_input["input"]["local_images_dir"] = os.path.join(exp_path, sample, chip_name) + '_images'
@@ -89,22 +89,18 @@ def KanzusLogic(event_file):
         base_input["input"]["prime_dir"] = data_dir + '_prime'
         base_input["input"]["upload_dir"] = os.path.join(base_input["input"]["base_data_dir"],  event['sample'], event['chip_letter']) + '_images' 
         base_input["input"]["trigger_name"] = event_file
-        base_input['exp'] = event['exp']
-        base_input['sample'] = event['sample']
-        base_input['chip_letter'] = event['chip_letter']
-        base_input['filename'] = event['filename']
-        base_input['chip_name'] = event['chip_name']]
-        base_input['run_num'] = event['run_num']
+        base_input["input"]['exp'] = event['exp']
+        base_input["input"]['sample'] = event['sample']
+        base_input["input"]['chip_letter'] = event['chip_letter']
+        base_input["input"]['filename'] = event['filename']
+        base_input["input"]['chip_name'] = event['chip_name']
+        base_input["input"]['run_num'] = event['run_num']
+        base_input["input"]['batch_stills'] = n_batch_stills
 
-
-        if event['cbf_num'] % n_batch_transfer == 0:
-            start_transfer_flow(event)
 
         if event['cbf_num'] % n_batch_stills == 0:
             start_stills_flow(event)
 
-        if event['cbf_num'] % n_batch_plot == 0:
-            start_plot_flow(event)
 
     if 'int_list.txt' in event_file:
         event = parse_int_event(event_file)
@@ -112,36 +108,9 @@ def KanzusLogic(event_file):
         if event['total_ints'] % n_batch_prime == 0:
             start_prime_flow(event)
 
-def start_transfer_flow(event_file, sample, chip_letter, cbf_num):
-    label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
-    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
 
-    print('Transfer Flow')
-    print("  Local Trigger : " + event_file)
-    print("  UUID : " + flow['action_id'])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+def start_stills_flow(event):
 
-
-def start_stills_flow(event_file, sample, chip_letter, chip_name, run_num, cbf_num):
-    subranges = create_ranges(cbf_num - n_batch_stills, cbf_num, n_batch_stills)
-    new_range = subranges[0]
-    label = f'SSX_Stills_{sample}_{chip_letter}_{new_range}'
-
-    flow_input = base_input.copy()
-    flow_input["input"]["input_files"]=f"{chip_name}_{run_num}_{new_range}.cbf"
-    flow_input["input"]["input_range"]=new_range[1:-1]
-
-    flow = stills_flow.run_flow(flow_input=flow_input, label=label)
-
-    print('Stills Flow')
-    print("  Local Trigger : " + event_file)
-    print("  Range : " + base_input["input"]["input_range"])
-    print("  UUID : " + flow['action_id'])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-
-
-def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
-    label = f'SSX_Plot_{sample}_{chip_letter}_{cbf_num}'
     flow_input = base_input.copy()
 
     flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
@@ -158,18 +127,17 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
         'groups': [],
     }
 
-    flow = plot_flow.run_flow(flow_input=base_input,label=label)
+    label = 'SSX_Stills_{}_{}_{}'.format(event['sample'],event['chip_letter'],event['cbf_num'])
+    flow = stills_flow.run_flow(flow_input=flow_input, label=label)
 
-    print('Plot and Publish Flow')
-    print("  Local Trigger : " + event_file)
+    print('Stills Flow')
+    print("  Local Trigger : " + base_input["input"]["trigger_name"])
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+
+
  
-def start_prime_flow(event_file, cbf_num, cbf_base):
-    subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
-    new_range = subranges[0]                                                                        
-    base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
-    base_input["input"]["input_range"]=new_range[1:-1]                                              
+def start_prime_flow(event):
                                                                                                             
     label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
                                                                                                             
@@ -180,6 +148,23 @@ def start_prime_flow(event_file, cbf_num, cbf_base):
     print("  Range : " + base_input["input"]["input_range"])                                        
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+
+
+def register_container():
+    from funcx.sdk.client import FuncXClient
+    from gladier_kanzus.tools.dials_stills import dials_stills
+
+    fxc = FuncXClient()
+    
+    print('registering container')
+    cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
+    container_name = "dials_v3.simg"
+
+    cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
+    print('container id ', cont_id)
+    
+    return fxc.register_function(dials_stills, container_uuid=cont_id)
+    
 
 
 # Arg Parsing
@@ -195,9 +180,7 @@ def parse_args():
 from gladier_kanzus.deployments import deployment_map
 
 ##Import relevant flows
-from gladier_kanzus.flows import TransferFlow
 from gladier_kanzus.flows import StillsFlow
-from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
 
 
@@ -238,16 +221,14 @@ if __name__ == '__main__':
             # globus endpoints
             "globus_local_ep": depl_input['input']['beamline_globus_ep'],
             "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
-	        "globus_dest_mount" : depl_input['input']['ssx_globus_mount']
+	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
     
             # container hack for stills
-#            "stills_process_funcx_id": register_container(),
+            "dials_stills_funcx_id": register_container(),
         }
     }
 
-    data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
-    plot_flow = PublishFlow()
     prime_flow = PrimeFlow()
 
     os.chdir(local_dir)

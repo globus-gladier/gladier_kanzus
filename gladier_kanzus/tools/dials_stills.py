@@ -6,10 +6,14 @@ def dials_stills(**data):
 
     proc_dir = data['proc_dir']
     data_dir = data['data_dir']
-    input_files = data['input_files']
     run_num = data['run_num']
-    
+    chip_name = data['chip_name']
+    cbf_num = data['cbf_num']
+    batch_size = data['stills_batch_size']
+
     phil_name = f"{proc_dir}/process_{run_num}.phil"
+
+    input_files = f"{chip_name}_{run_num}_{cbf_num}.cbf"
 
     file_end = data['input_range'].split("..")[-1]
   

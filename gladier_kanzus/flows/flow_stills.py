@@ -8,6 +8,7 @@ from gladier import GladierBaseClient, generate_flow_definition
 class StillsFlow(GladierBaseClient):
     globus_group = 'e31ed13f-e9e0-11e9-bbd0-0a8c64af9bb2'
     gladier_tools = [
+        #'gladier_kanzus.tools.TransferOut',
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
         'gladier_kanzus.tools.SSXGatherData',

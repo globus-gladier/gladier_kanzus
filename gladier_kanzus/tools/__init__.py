@@ -1,7 +1,6 @@
 from .transfer_img import  TransferImage
 from .transfer_out import TransferOut
 from .transfer_proc import TransferProc
-from .transfer_img_block import TransferBlock
 from .transfer_prime import TransferPrime
 
 from .create_phil import CreatePhil
@@ -24,7 +23,6 @@ __all__ = ['CreatePhil',
         'XYSearch', 
         'XYPlot', 
         'TransferImage',
-        'TransferBlock', 
         'TransferOut', 
         'TransferProc',
         'TransferPrime']
