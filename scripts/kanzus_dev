@@ -129,7 +129,7 @@ def start_stills_flow(event):
 
     label = 'SSX_Stills_{}_{}_{}'.format(event['sample'],event['chip_letter'],event['cbf_num'])
     flow = stills_flow.run_flow(flow_input=flow_input, label=label)
-
+    print(flow_input)
     print('Stills Flow')
     print("  Local Trigger : " + base_input["input"]["trigger_name"])
     print("  UUID : " + flow['action_id'])
