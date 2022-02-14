@@ -43,7 +43,7 @@ class Handler(FileSystemEventHandler):
         if event.is_directory:
             return None
         elif event.event_type == 'created':
-            KanzusLogic(event.src_path)
+            #KanzusLogic(event.src_path)
             return None
         elif event.event_type == 'modified':
             KanzusLogic(event.src_path)
@@ -150,23 +150,6 @@ def start_prime_flow(event):
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
 
 
-def register_container():
-    from funcx.sdk.client import FuncXClient
-    from gladier_kanzus.tools.dials_stills import dials_stills
-
-    fxc = FuncXClient()
-    
-    print('registering container')
-    cont_dir =  '/eagle/APSDataAnalysis/SSX/containers/'
-    container_name = "dials_v3.simg"
-
-    cont_id = fxc.register_container(location=cont_dir+container_name,container_type='singularity')
-    print('container id ', cont_id)
-    
-    return fxc.register_function(dials_stills, container_uuid=cont_id)
-    
-
-
 # Arg Parsing
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -223,8 +206,6 @@ if __name__ == '__main__':
             "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
 	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
     
-            # container hack for stills
-            "dials_stills_funcx_id": register_container(),
         }
     }
 
