@@ -118,7 +118,6 @@ class SSXGatherData(GladierBaseTool):
 
     required_input = [
         'trigger_name',
-        'tar_input',
         'proc_dir',
         'upload_dir',
         'funcx_endpoint_non_compute',
