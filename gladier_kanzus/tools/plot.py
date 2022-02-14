@@ -2,18 +2,39 @@ from typing import List
 from gladier import GladierBaseTool, generate_flow_definition
 
 
-def ssx_plot(x_num_steps=0, y_num_steps=0, int_indices=[], plot_filename='composite.png'):
-    """
-    Plot the current list of ints so far. Data requires the following keys
-        * x_num_steps (int) X dimension for the plot
-        * y_num_steps (int) Y dimension for the plot
-        * int_indices (list of ints) list of int 'hits' to light up on the plot
-        * plot_name (path) full filename to save the plot
-    """
+def ssx_plot(**data):
     import numpy as np
     from matplotlib import pyplot as plt
+    import os
+    import json
+    import re
+    import glob 
+
+    data_dir = data['data_dir']
+    proc_dir = data['proc_dir']
+    upload_dir = data['upload_dir']
+    run_num = data['run_num']
+
+    beamline_file_name = f'beamline_run{run_num}.json'
+    beamline_file = os.path.join(data_dir, beamline_file_name)
+
+    with open(beamline_file, 'r') as fp:
+        beamline_metadata = json.load(fp)
+        user_input = beamline_metadata.get('user_input', {})
+    
+    x_num_steps= user_input.get('x_num_steps')
+    y_num_steps= user_input.get('y_num_steps')
+    plot_filename=os.path.join(upload_dir, 'composite.png')
+
+    int_indices=[]
+    for int_file in glob.glob(os.path.join(proc_dir,'int-*.pickle')):
+        int_match = re.match(r'int-\d+-\w+_\d+_(\d+).pickle', int_file)
+        if int_match:
+            int_index = int_match.groups()
+            int_indices.append(int(int_index))    
 
     lattice_counts = np.zeros(x_num_steps*y_num_steps, dtype=np.dtype(int))
+
     for index in int_indices:
         lattice_counts[index] += 1
     lattice_counts = lattice_counts.reshape((y_num_steps, x_num_steps))

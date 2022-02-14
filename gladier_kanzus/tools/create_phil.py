@@ -6,31 +6,29 @@ def create_phil(**data):
     import os
     from string import Template
 
-    proc_dir = data['proc_dir']
     data_dir = data['data_dir']
-    run_num = data['input_files'].split("_")[-2] ##this is pretty weird
-    
+    proc_dir = data['proc_dir']
+    run_num  = data['run_num']
+
     if not os.path.exists(proc_dir):
         os.makedirs(proc_dir)
         
-    
-    if 'suffix' in data:
-        phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
-    else:
-        phil_name = f"{proc_dir}/process_{run_num}.phil"
+    phil_name = f"{proc_dir}/process_{run_num}.phil"
 
     if os.path.isfile(phil_name):
         return phil_name
-        
+    
+    ##Getting optional variables
     unit_cell = data.get('unit_cell', None)
-    beamx = data['beamx']
-    beamy = data['beamy']
-    nproc = data['nproc']
+    beamx = data.get(['beamx'], -214.400)
+    beamy = data.get(['beamy'], 218.200)
+    nproc = data.get(['nproc'], 32)
+    mask_file = data.get('mask', 'mask.pickle')
 
     ##opening existing files
     beamline_json = os.path.join(data_dir,f"beamline_run{run_num}.json")
     xy_json = os.path.join(data_dir,'xy.json')
-    mask = os.path.join(data_dir,data.get('mask', 'mask.pickle'))
+    mask = os.path.join(data_dir,mask_file)
 
     beamline_data = None
 
@@ -93,11 +91,12 @@ indexing {
 }""")
     phil_data = template_phil.substitute(template_data)
 
-
     with open(phil_name, 'w') as fp:
         fp.write(phil_data)
     return phil_name
 
-@generate_flow_definition
+@generate_flow_definition(modifiers={
+    'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
+})
 class CreatePhil(GladierBaseTool):
     funcx_functions = [create_phil]

@@ -1,37 +1,32 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
-def stills_process(**data):
+def dials_stills(**data):
     import os
     import subprocess
-    from subprocess import PIPE
 
-    
     proc_dir = data['proc_dir']
     data_dir = data['data_dir']
     input_files = data['input_files']
-    run_num = data['input_files'].split("_")[-2]
+    run_num = data['run_num']
     
-    if 'suffix' in data:
-        phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
-    else:
-        phil_name = f"{proc_dir}/process_{run_num}.phil"
+    phil_name = f"{proc_dir}/process_{run_num}.phil"
 
     file_end = data['input_range'].split("..")[-1]
   
-    if not "timeout" in data:
-        data["timeout"] = 1200
+    timeout = data.get('timeout', 1200)
 
     dials_path = data.get('dials_path','')
-    cmd = f'source {dials_path}/dials_env.sh && timeout {data["timeout"]} dials.stills_process {phil_name} {data_dir}/{input_files} > log-{file_end}.txt'
+    cmd = f'source {dials_path}/dials_env.sh && timeout {timeout} dials.stills_process {phil_name} {data_dir}/{input_files} > log-{file_end}.txt'
 
-    
-    os.chdir(proc_dir) ##Need to guarantee the worker is at the correct location..
-    res = subprocess.run(cmd, stdout=PIPE, stderr=PIPE,
+    os.chdir(proc_dir) 
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=True, executable='/bin/bash')
     
     return cmd, str(res.stdout)
 
 
-@generate_flow_definition
+@generate_flow_definition(modifiers={
+    'dials_stills': {'WaitTime':7200}
+})
 class DialsStills(GladierBaseTool):
-    funcx_functions = [stills_process]
+    funcx_functions = [dials_stills]

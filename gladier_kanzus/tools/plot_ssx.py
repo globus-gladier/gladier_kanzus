@@ -17,10 +17,7 @@ def funcx_plot_ssx(**data):
     run_num = data['input_files'].split("_")[-2]
     
     
-    if 'suffix' in data:
-        phil_name = f"{proc_dir}/process_{run_num}_{data['suffix']}.phil"
-    else:
-        phil_name = f"{proc_dir}/process_{run_num}.phil"
+    phil_name = f"{proc_dir}/process_{run_num}.phil"
 
 
     ##opening existing files
