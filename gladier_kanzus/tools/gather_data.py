@@ -7,66 +7,68 @@ def ssx_gather_data(**data):
     import os
     import json
     import shutil
-    from zipfile import ZipFile
+
+    import glob
+
     trigger_name = data['trigger_name']
     data_dir = data['data_dir']
-    processing_dir = data['proc_dir']
+    proc_dir = data['proc_dir']
     upload_dir = data['upload_dir']
-    tar_input = data['tar_input']
 
-    sample_metadata = trigger_name.split('/')[-4:]
-    assert len(sample_metadata) == 4 and trigger_name.endswith('cbf'), (
-        'Invalid sample path, must run with end path resembling: "S9/nsp10nsp16/K/Kaleidoscope_15_22016.cbf"'
-        f'Got: {trigger_name}'
-    )
+    ##experiment information
+    run_name = data['exp']
+    protein= data['sample']
+    chip_name = data['chip_name']
+    run_num = data['run_num']
 
-    # Gather metadata from path names
-    run_name, protein, _, trigger_file = sample_metadata
-    match = re.match(r'(\w+)_(\d+)_\d+.cbf', trigger_file)
-    if not match:
-        raise ValueError(f'Invalid trigger file: {trigger_file}, must match "Kaleidoscope_15_22016.cbf"')
-    exp_name, exp_number = match.groups()
+    beamline_file_name = f'beamline_run{run_num}.json'
+    beamline_file = os.path.join(data_dir, beamline_file_name)
 
-    # Get processing and image dirs
-    # run_dir = os.path.dirname(trigger_name)
-
-    # Check it exists in case xy search didn't create this one
-    if not os.path.exists(processing_dir):
-        os.mkdir(processing_dir)
-
-    beamline_file = os.path.join(data_dir, f'beamline_run{exp_number}.json')
     if not os.path.exists(upload_dir):
         os.mkdir(upload_dir)
-    shutil.copyfile(beamline_file, os.path.join(upload_dir, os.path.basename(beamline_file)))
+    
+    if not os.path.isfile(os.path.join(upload_dir, beamline_file_name)):
+        shutil.copyfile( beamline_file, upload_dir)
 
-    # Fetch the list of ints that 'hit'.
     int_indices = []
     int_filenames = []
     cbf_indices = []
-    for filename in os.listdir(processing_dir):
-        # match int-0-Kaleidoscope_15_05189.pickle
-        int_match = re.match(r'int-(\d+)-(\w+)_(\d+)_(\d+).pickle', filename)
+
+    for int_file in glob.glob(os.path.join(proc_dir,'int-*.pickle')):
+        int_match = re.match(r'int-\d+-\w+_\d+_(\d+).pickle', int_file)
         if int_match:
-            int_filenames.append(filename)
-            int_number, exp_name, beamline_run, int_index = int_match.groups()
+            int_index = int_match.groups()
+            int_filenames.append(int_file)
             int_indices.append(int(int_index))
-        # else:
-        #     match idx-Kaleidoscope_15_00001_datablock.json
-        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
-        #     cbf_match = re.match(r'idx-\w+_\d+_(\d+)_datablock.json', filename)
-        #     if cbf_match:
-        #         cbf_index = int(cbf_match.groups()[0])
-        #         cbf_indices.append(cbf_index)
-        if '.log' in filename:
-            with open(filename,'r') as f:
-                for line in f.readlines():
-                    match = re.findall(r"(\d+).cbf", line)
-                    if match:
-                        cbf_index = int(match[0])
-                        cbf_indices.append(cbf_index)
+
+    for log_file in glob.glob(os.path.join(proc_dir,'log*.txt')):
+        with open(log_file,'r') as f:
+            for line in f.readlines():
+                match = re.findall(r"\w+_\d+_(\d+).cbf", line)
+                if match:
+                    cbf_index = int(match[0])
+                    cbf_indices.append(cbf_index)
     
     if len(cbf_indices) == 0:
         cbf_indices.append(0)
+   
+    proc_cbf_file = os.path.join(proc_dir,'proc_cbf.txt')
+    
+    if os.path.exists(proc_cbf_file):
+        os.remove(proc_cbf_file)
+
+    with open(proc_cbf_file,'w+') as f:
+        for cbf in sorted(cbf_indices):
+            f.write(str(cbf) + "\n")
+
+    proc_ints_file = os.path.join(proc_dir,'proc_ints.txt')
+    
+    if os.path.exists(proc_ints_file):
+        os.remove(proc_ints_file)
+
+    with open(proc_ints_file,'w+') as f:
+        for intfile in sorted(int_filenames):
+            f.write(str(intfile) + "\n")
     
     batch_info = {
         'cbf_files': len(cbf_indices),
@@ -74,15 +76,10 @@ def ssx_gather_data(**data):
         'total_number_of_int_files': len(int_indices)
     }
 
-    # Move int files to the upload dir.
-    os.makedirs(tar_input, mode=0o775, exist_ok=True)
-    for int_filename in int_filenames:
-        shutil.copyfile(os.path.join(processing_dir, int_filename),
-                        os.path.join(tar_input, int_filename))
-
     # Fetch beamline metadata
     with open(beamline_file, 'r') as fp:
         beamline_metadata = json.load(fp)
+
     user_input = beamline_metadata.get('user_input', {})
     protein = user_input.get('protein_name', protein)
 
@@ -90,8 +87,8 @@ def ssx_gather_data(**data):
     metadata = data['pilot'].get('metadata', {})
     metadata.update(beamline_metadata)
     metadata.update({
-        'chip': exp_name,
-        'experiment_number': exp_number,
+        'chip': chip_name,
+        'experiment_number': run_num,
         'run_name': run_name,
         'protein': protein,
         'trigger_name': trigger_name,
@@ -100,13 +97,7 @@ def ssx_gather_data(**data):
     data['pilot']['metadata'] = metadata
 
     return {
-        'pilot': data['pilot'],
-        'plot': {
-            'plot_filename': os.path.join(upload_dir, 'composite.png'),
-            'int_indices': sorted(int_indices),
-            'x_num_steps': user_input.get('x_num_steps', 0),
-            'y_num_steps': user_input.get('y_num_steps', 0),
-        }
+        'pilot': data['pilot']
     }
 
 
@@ -136,3 +127,5 @@ class SSXGatherData(GladierBaseTool):
     funcx_functions = [
         ssx_gather_data
     ]
+
+
