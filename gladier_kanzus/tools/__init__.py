@@ -3,6 +3,8 @@ from .transfer_out import TransferOut
 from .transfer_proc import TransferProc
 from .transfer_prime import TransferPrime
 
+from .wait_trigger import WaitTrigger
+
 from .create_phil import CreatePhil
 from .dials_stills import DialsStills
 
@@ -25,7 +27,8 @@ __all__ = ['CreatePhil',
         'TransferImage',
         'TransferOut', 
         'TransferProc',
-        'TransferPrime']
+        'TransferPrime',
+        'WaitTrigger']
 
 
 

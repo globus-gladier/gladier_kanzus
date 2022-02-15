@@ -68,13 +68,11 @@ def parse_int_event(event_file):
     return event
 
 def KanzusLogic(event_file):
-    #print(event_file)
 
     if '.cbf' in event_file:
         event = parse_cbf_event(event_file)
-        #print(event)
 
-    #    # LOCAL processing dirs
+        # LOCAL processing dirs
         exp_path = base_input["input"]["base_local_dir"]
         local_dir = os.path.join(exp_path, event['sample'], event['chip_letter'])
         base_input["input"]["local_dir"] = local_dir
@@ -97,29 +95,41 @@ def KanzusLogic(event_file):
         base_input["input"]['cbf_num'] = event['cbf_num']
         base_input["input"]['run_num'] = event['run_num']
         base_input["input"]['stills_batch_size'] = n_batch_stills
-    
+
+
+        if event['cbf_num'] % n_batch_transfer == 0 or event['cbf_num'] == n_initial_transfer:
+            start_transfer_flow(event)
 
         if event['cbf_num'] % n_batch_stills == 0:
             start_stills_flow(event)
 
         if event['cbf_num'] % n_batch_prime == 0:
             start_prime_flow(event)
-    #if 'int_list.txt' in event_file:
-    #    event = parse_int_event(event_file)
-    #    
-    #    if event['total_ints'] % n_batch_prime == 0:
-    #        start_prime_flow(event)
 
+    if 'int_list.txt' in event_file:
+       event = parse_int_event(event_file)
+       
+       if event['total_ints'] % n_batch_prime == 0:
+           start_prime_flow(event)
+
+
+def start_transfer_flow(event):
+    ###RunFlow
+    label = 'SSX_Transfer_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
+    print('Transfer Flow')
+    print("  Local Trigger : " + base_input["input"]["trigger_name"])                                                        
+    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
 
 def start_stills_flow(event):
 
+    ##TODO Move into gather_data
     flow_input = base_input.copy()
-
     flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
     flow_input['input']['tar_output'] = str(pathlib.Path(flow_input["input"]["upload_dir"]) / 'ints.tar.gz')
-
     flow_input['input']['pilot'] = {
-        # This is the directory which will be published to petrel
+        # This is the directory which will be published
         'dataset': flow_input['input']['upload_dir'],
         'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
         'project': 'ssx',
@@ -129,25 +139,22 @@ def start_stills_flow(event):
         'groups': [],
     }
 
-    label = 'SSX_Stills_{}_{}_{}'.format(event['sample'],event['chip_letter'],event['cbf_num'])
+    ###RunFlow
+    label = 'SSX_Stills_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = stills_flow.run_flow(flow_input=flow_input, label=label)
-    #print(flow_input)
     print('Stills Flow')
     print("  Local Trigger : " + base_input["input"]["trigger_name"])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
 
-
- 
-def start_prime_flow(event):
-                                                                                                            
-    label = 'SSX_Prime_{}_{}'.format(event['chip_name'],event['cbf_num'])                                                    
-                                                                                                            
-    flow = prime_flow.run_flow(flow_input=base_input, label=label)                               
-                                                                                                            
+def start_prime_flow(event):                                   
+    ###RunFlow
+    label = 'SSX_Prime_{}_{}'.format(event['chip_name'],event['cbf_num'])                                                                                                                                    
+    flow = prime_flow.run_flow(flow_input=base_input, label=label)
     print('Prime Flow')                                                                            
     print("  Local Trigger : " + base_input["input"]["trigger_name"])                                                        
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-
+    ###
 
 # Arg Parsing
 def parse_args():
@@ -162,7 +169,9 @@ def parse_args():
 from gladier_kanzus.deployments import deployment_map
 
 ##Import relevant flows
+from gladier_kanzus.flows import TransferFlow
 from gladier_kanzus.flows import StillsFlow
+from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
 
 
@@ -174,13 +183,10 @@ if __name__ == '__main__':
     local_dir = args.localdir
     data_dir = args.datadir
 
-    # triggers for data transfer BEAMLINE >> THETA
+    n_initial_transfer = 512
     n_batch_transfer = 2048
-    # triggers for stills batch procces (THETA)
     n_batch_stills = 512
-    # triggers for prime batch procces (THETA)
     n_batch_plot =  2048
-    # triggers for prime batch procces (THETA)
     n_batch_prime =  2000
 
     depl = deployment_map.get(args.deployment)
@@ -189,25 +195,22 @@ if __name__ == '__main__':
 
     depl_input = depl.get_input()
 
-
     base_input = {
         "input": {
             #Processing variables
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
-
             # funcX endpoints
             'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
             'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
-
             # globus endpoints
             "globus_local_ep": depl_input['input']['beamline_globus_ep'],
             "globus_dest_ep": depl_input['input']['theta_globus_ep'], 
-	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
-    
+    	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
         }
     }
 
+    data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
     prime_flow = PrimeFlow()
 

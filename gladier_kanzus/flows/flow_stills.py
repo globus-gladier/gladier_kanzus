@@ -19,7 +19,8 @@ class StillsFlow(BaseClient):
     }
     
     gladier_tools = [
-        'gladier_kanzus.tools.TransferOut',
+        # 'gladier_kanzus.tools.TransferOut',
+        'gladier_kanzus.tools.WaitTrigger',
         'gladier_kanzus.tools.CreatePhil',
         'gladier_kanzus.tools.DialsStills',
         'gladier_kanzus.tools.SSXGatherData',

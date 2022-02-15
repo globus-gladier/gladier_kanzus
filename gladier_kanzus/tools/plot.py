@@ -1,6 +1,4 @@
-from typing import List
 from gladier import GladierBaseTool, generate_flow_definition
-
 
 def ssx_plot(**data):
     import numpy as np
