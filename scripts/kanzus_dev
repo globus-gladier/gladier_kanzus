@@ -77,7 +77,7 @@ def KanzusLogic(event_file):
         local_dir = os.path.join(exp_path, event['sample'], event['chip_letter'])
         base_input["input"]["local_dir"] = local_dir
         base_input["input"]["local_proc_dir"] = local_dir + '_proc'
-        base_input["input"]["local_prime_dir"] = os.path.join(exp_path, event['sample'], event['chip_name']) + '_images'
+        base_input["input"]["local_prime_dir"] = local_dir + '_prime'
         base_input["input"]["local_images_dir"] = os.path.join(exp_path, event['sample'], event['chip_name']) + '_images'
 
         # REMOTE processing dirs
