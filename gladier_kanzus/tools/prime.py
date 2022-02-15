@@ -41,7 +41,8 @@ def dials_prime(**data):
         for intfile in sorted(int_filenames):
             f.write(str(intfile) + "\n")
 
-    prime_run_name = f"{exp_name}_prime"
+    
+    prime_run_name = exp_name + '_prime_' + str(len(int_filenames))
     
     os.chdir(prime_dir)
 

@@ -4,11 +4,13 @@ def wait_trigger_file(**data):
     import os
     import time
     data_dir = data['data_dir']
-    filename = data["filename"]
-    
-    trigger_file = os.path.join(data_dir,filename)
+    filename = data['filename']
+    run_num = data['run_num']
 
-    while not os.path.exists(trigger_file):
+    trigger_file = os.path.join(data_dir,filename)
+    beamline_json = os.path.join(data_dir,f"beamline_run{run_num}.json")
+
+    while not os.path.exists(trigger_file) and not os.path.exists(beamline_json):
         time.sleep(1)
         
     return trigger_file
