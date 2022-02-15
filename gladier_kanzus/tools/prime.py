@@ -13,6 +13,7 @@ def dials_prime(**data):
     import subprocess
     from subprocess import PIPE
     from string import Template
+    import glob 
 
     proc_dir = data['proc_dir']
     prime_dir = data['prime_dir']
@@ -23,13 +24,24 @@ def dials_prime(**data):
     unit_cell = data.get('unit_cell', None)
     dmin = data.get('prime_dmin', 2.1)
 
-    proc_ints_file = os.path.join(proc_dir,'proc_ints.txt')
+    if not os.path.exists(prime_dir):
+        os.mkdir(prime_dir)
 
-    if not os.path.isfile(proc_ints_file):
+    int_filenames =  sorted(glob.glob(os.path.join(proc_dir,'int-*.pickle')))
+
+    if len(int_filenames)==0:
         return 'no ints'
 
-    ##TODO this is wrong
-    prime_run_name = f"{exp_name}_{data['input_range']}"
+    proc_ints_file = os.path.join(prime_dir,'proc_ints.txt')
+
+    if os.path.exists(proc_ints_file):
+        os.remove(proc_ints_file)
+
+    with open(proc_ints_file,'w+') as f:
+        for intfile in sorted(int_filenames):
+            f.write(str(intfile) + "\n")
+
+    prime_run_name = f"{exp_name}_prime"
     
     os.chdir(prime_dir)
 

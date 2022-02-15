@@ -14,12 +14,13 @@ def dials_stills(**data):
     phil_name = f"{proc_dir}/process_{run_num}.phil"
 
     cbf_start = cbf_num - batch_size
-    
-    file_start = f"{chip_name}_{run_num}_{cbf_start}.cbf"
-    file_end = f"{chip_name}_{run_num}_{cbf_num}.cbf"
+    cbf_end = cbf_num - 1
 
-    input_files = f"{chip_name}_{run_num}_{cbf_start}..{cbf_num}.cbf"
-  
+    file_start = f"{chip_name}_{run_num}_{cbf_start}.cbf"
+    file_end = f"{chip_name}_{run_num}_{cbf_end}.cbf"
+
+    input_files = f"{chip_name}_{run_num}_{{{str(cbf_start).zfill(5)}..{str(cbf_end).zfill(5)}}}.cbf"
+
     timeout = data.get('timeout', 1200)
 
     dials_path = data.get('dials_path','')

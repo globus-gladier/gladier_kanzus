@@ -20,9 +20,9 @@ def create_phil(**data):
     
     ##Getting optional variables
     unit_cell = data.get('unit_cell', None)
-    beamx = data.get(['beamx'], -214.400)
-    beamy = data.get(['beamy'], 218.200)
-    nproc = data.get(['nproc'], 32)
+    beamx = data.get('beamx', -214.400)
+    beamy = data.get('beamy', 218.200)
+    nproc = data.get('nproc', 32)
     mask_file = data.get('mask', 'mask.pickle')
 
     ##opening existing files
@@ -93,7 +93,7 @@ indexing {
 
     with open(phil_name, 'w') as fp:
         fp.write(phil_data)
-    return phil_name
+    return phil_name 
 
 @generate_flow_definition(modifiers={
     'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},

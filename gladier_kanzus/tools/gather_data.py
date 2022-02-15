@@ -1,4 +1,3 @@
-import datetime
 from gladier import GladierBaseTool, generate_flow_definition
 
 
@@ -7,7 +6,6 @@ def ssx_gather_data(**data):
     import os
     import json
     import shutil
-
     import glob
 
     trigger_name = data['trigger_name']
@@ -28,16 +26,17 @@ def ssx_gather_data(**data):
         os.mkdir(upload_dir)
     
     if not os.path.isfile(os.path.join(upload_dir, beamline_file_name)):
-        shutil.copyfile( beamline_file, upload_dir)
+        shutil.copy( beamline_file, upload_dir)
 
     int_indices = []
     int_filenames = []
     cbf_indices = []
 
     for int_file in glob.glob(os.path.join(proc_dir,'int-*.pickle')):
+        int_file = os.path.basename(int_file)
         int_match = re.match(r'int-\d+-\w+_\d+_(\d+).pickle', int_file)
         if int_match:
-            int_index = int_match.groups()
+            int_index = int_match.groups()[0]
             int_filenames.append(int_file)
             int_indices.append(int(int_index))
 
