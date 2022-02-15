@@ -9,7 +9,7 @@ def wait_trigger_file(**data):
     trigger_file = os.path.join(data_dir,filename)
 
     while not os.path.exists(trigger_file):
-        time.sleep(5)
+        time.sleep(1)
         
     return trigger_file
 
