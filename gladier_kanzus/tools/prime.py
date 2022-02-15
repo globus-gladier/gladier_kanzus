@@ -24,13 +24,13 @@ def dials_prime(**data):
     unit_cell = data.get('unit_cell', None)
     dmin = data.get('prime_dmin', 2.1)
 
-    if not os.path.exists(prime_dir):
-        os.mkdir(prime_dir)
-
     int_filenames =  sorted(glob.glob(os.path.join(proc_dir,'int-*.pickle')))
 
     if len(int_filenames)==0:
         return 'no ints'
+
+    if not os.path.exists(prime_dir):
+                os.mkdir(prime_dir)
 
     proc_ints_file = os.path.join(prime_dir,'proc_ints.txt')
 

@@ -26,9 +26,10 @@ def ssx_plot(**data):
 
     int_indices=[]
     for int_file in glob.glob(os.path.join(proc_dir,'int-*.pickle')):
+        int_file = os.path.basename(int_file)
         int_match = re.match(r'int-\d+-\w+_\d+_(\d+).pickle', int_file)
         if int_match:
-            int_index = int_match.groups()
+            int_index = int_match.groups()[0]
             int_indices.append(int(int_index))    
 
     lattice_counts = np.zeros(x_num_steps*y_num_steps, dtype=np.dtype(int))
