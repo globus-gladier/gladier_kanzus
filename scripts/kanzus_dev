@@ -95,6 +95,8 @@ def KanzusLogic(event_file):
         base_input["input"]['cbf_num'] = event['cbf_num']
         base_input["input"]['run_num'] = event['run_num']
         base_input["input"]['stills_batch_size'] = n_batch_stills
+        base_input['input']['tar_input'] = base_input["input"]["proc_dir"] ##Something funky here 
+        base_input['input']['tar_output'] = os.path.join(base_input["input"]["upload_dir"],'ints.tar.gz')
 
 
         if event['cbf_num'] % n_batch_transfer == 0 or event['cbf_num'] == n_initial_transfer:
@@ -102,6 +104,9 @@ def KanzusLogic(event_file):
 
         if event['cbf_num'] % n_batch_stills == 0:
             start_stills_flow(event)
+
+        if event['cbf_num'] % n_batch_publish == 0:
+            start_publish_flow(event)
 
         if event['cbf_num'] % n_batch_prime == 0:
             start_prime_flow(event)
@@ -117,43 +122,33 @@ def start_transfer_flow(event):
     ###RunFlow
     label = 'SSX_Transfer_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
-    print('Transfer Flow')
-    print("  Local Trigger : " + base_input["input"]["trigger_name"])                                                        
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
     ###
 
 def start_stills_flow(event):
-
-    ##TODO Move into gather_data
-    flow_input = base_input.copy()
-    flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
-    flow_input['input']['tar_output'] = str(pathlib.Path(flow_input["input"]["upload_dir"]) / 'ints.tar.gz')
-    flow_input['input']['pilot'] = {
-        # This is the directory which will be published
-        'dataset': flow_input['input']['upload_dir'],
-        'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
-        'project': 'ssx',
-        'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
-        # Extra groups can be specified here. The SSX Admin group will always
-        # be provided automatically.
-        'groups': [],
-    }
-
     ###RunFlow
     label = 'SSX_Stills_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = stills_flow.run_flow(flow_input=flow_input, label=label)
-    print('Stills Flow')
-    print("  Local Trigger : " + base_input["input"]["trigger_name"])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
+
+
+def start_publish_flow(event):
+    ###RunFlow
+    label = f'SSX_Plot_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    flow = publish_flow.run_flow(flow_input=base_input,label=label)
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
     ###
 
 def start_prime_flow(event):                                   
     ###RunFlow
     label = 'SSX_Prime_{}_{}'.format(event['chip_name'],event['cbf_num'])                                                                                                                                    
     flow = prime_flow.run_flow(flow_input=base_input, label=label)
-    print('Prime Flow')                                                                            
-    print("  Local Trigger : " + base_input["input"]["trigger_name"])                                                        
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
     ###
 
 # Arg Parsing
@@ -186,7 +181,7 @@ if __name__ == '__main__':
     n_initial_transfer = 512
     n_batch_transfer = 2048
     n_batch_stills = 512
-    n_batch_plot =  2048
+    n_batch_publish =  2048
     n_batch_prime =  2000
 
     depl = deployment_map.get(args.deployment)
@@ -213,6 +208,7 @@ if __name__ == '__main__':
     data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
     prime_flow = PrimeFlow()
+    publish_flow = PublishFlow()
 
     os.chdir(local_dir)
 

@@ -80,6 +80,16 @@ def ssx_gather_data(**data):
     user_input = beamline_metadata.get('user_input', {})
     protein = user_input.get('protein_name', protein)
 
+    metadata = {
+        # This is the directory which will be published
+        'dataset': data['upload_dir'],
+        'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
+        'project': 'ssx',
+        'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
+        # Extra groups can be specified here. The SSX Admin group will always
+        # be provided automatically.
+        'groups': [],    }
+
     # Update any metadata in the pilot 'metadata' key
     metadata = data['pilot'].get('metadata', {})
     metadata.update(beamline_metadata)
