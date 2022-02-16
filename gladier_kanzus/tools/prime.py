@@ -128,12 +128,15 @@ n_bins = 20""")
         fp.write(prime_data)
 
     # run prime
+    timeout = data.get('timeout', 1200)
     dials_path = data.get('dials_path','')
-    cmd = f"source {dials_path}/dials_env.sh; prime.run prime.phil &"
-    subprocess.run(cmd, stdout=PIPE, stderr=PIPE,
-                         shell=True, executable='/bin/bash')
+    cmd = f"source {dials_path}/dials_env.sh && timeout {timeout} prime.run prime.phil"
 
-    return
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             shell=True, executable='/bin/bash')
+    
+    return cmd, str(res.stdout), str(res.stderr)
+
 
 @generate_flow_definition
 class Prime(GladierBaseTool):

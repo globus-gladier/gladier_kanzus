@@ -40,7 +40,7 @@ def dials_stills(**data):
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=True, executable='/bin/bash')
     
-    return cmd, str(res.stdout)
+    return cmd, str(res.stdout), str(res.stderr)
 
 
 @generate_flow_definition(modifiers={
