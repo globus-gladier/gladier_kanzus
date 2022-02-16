@@ -1,6 +1,4 @@
-import os
 from setuptools import setup, find_packages
-from glob import glob
 
 install_requires = []
 with open('requirements.txt') as reqs:
@@ -9,8 +7,6 @@ with open('requirements.txt') as reqs:
         if not req or req.startswith('#'):
             continue
         install_requires.append(req)
-
-script_list = glob('scripts/gladier_*')
 
 setup(
     name='gladier-kanzus',
@@ -21,7 +17,7 @@ setup(
     version='0.0.5',
     packages=find_packages(),
     install_requires=install_requires,
-    scripts=script_list,
+    scripts=[],
     dependency_links=[],
     license='Apache 2.0',
     classifiers=[]
