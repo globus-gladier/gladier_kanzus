@@ -1,7 +1,19 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
 def create_phil(**data):
-    """Create a phil file if one doesn't already exist"""
+    """Create a phil file for dials-stills if one doesn't already exist
+    The Phil file uses a template set directly on the script and can be updated according to new options on dials
+    - data['data_dir'] is the path where the raw (cbf) data is stored
+    - data['proc_dir'] is the path to where dials will run and save results
+    - data['run_num'] set the beamline json being used for this particular phil
+    Optional variables can be passed to overwrite the default values
+    - data['unit_cell']
+    - data['beamx']
+    - data['beamy']
+    - data['nproc']
+    - data['mask']
+    If a file xy.json exists in the data_dir it will override beamx and beamy variables
+    """
     import json
     import os
     from string import Template
@@ -99,4 +111,11 @@ indexing {
     'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
 })
 class CreatePhil(GladierBaseTool):
+    flow_input = {}
+    required_input = [
+        'data_dir',
+        'proc_dir',
+        'run_num',
+        'funcx_endpoint_non_compute',
+    ]
     funcx_functions = [create_phil]

@@ -1,6 +1,16 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
 def ssx_plot(**data):
+    """Create hit image for current sample
+    - Uses the beamline metadata file to get the X and Y dimensions of the acquision
+    - Creates 'composite.png' image at the upload dir by counting the number of ints 
+    generated on each beam position
+    Variables:
+    - data['data_dir'] is the path where the raw (cbf) data is stored
+    - data['proc_dir'] is the path to where dials will run and save results
+    - data['upload_dir'] is the path to the folder which will be published into the portal
+    - data['run_num'] is the beamline run associated with this sample.
+     """
     import numpy as np
     from matplotlib import pyplot as plt
     import os
@@ -53,10 +63,12 @@ def ssx_plot(**data):
     'ssx_plot': {'endpoint': 'funcx_endpoint_non_compute'}
 })
 class SSXPlot(GladierBaseTool):
-
     flow_input = {}
-
     required_input = [
+        'data_dir',
+        'proc_dir',
+        'upload_dir',
+        'run_num'
         'funcx_endpoint_non_compute',
     ]
 

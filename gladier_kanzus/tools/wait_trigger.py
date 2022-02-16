@@ -1,6 +1,12 @@
 from gladier import GladierBaseTool, generate_flow_definition
 
 def wait_trigger_file(**data):
+    """Wait for beamline json and trigger files to arrive at destination.
+    Variables:
+    - data['data_dir'] set the basename of the target folder
+    - data['filename'] set the cbf file to wait for
+    - data['run_num'] set the beamline json 
+    """
     import os
     import time
     data_dir = data['data_dir']
@@ -21,6 +27,9 @@ def wait_trigger_file(**data):
 class WaitTrigger(GladierBaseTool):
     flow_input = {}
     required_input = [
+        'data_dir',
+        'filename',
+        'run_num',
         'funcx_endpoint_non_compute',
     ]
     funcx_functions = [

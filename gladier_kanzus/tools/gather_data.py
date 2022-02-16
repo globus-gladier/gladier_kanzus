@@ -1,15 +1,30 @@
 from gladier import GladierBaseTool, generate_flow_definition
 def ssx_gather_data(**data):
+    """Gather relevant data for each stills runRun dials-stills
+    1) reads dials logs and create a list of cbf files which were already processed by stills
+    2) gathers all int files created and make it into a list
+    3) wrap information to be published into the portal
+    Variables:
+    - data['data_dir'] is the path where the raw (cbf) data is stored
+    - data['proc_dir'] is the path to where dials will run and save results
+    - data['upload_dir'] is the path to the folder which will be published into the portal
+    - data['trigger_name'] is the filename of the file that triggered the flow.
+    - data['exp'] is the experiment name
+    - data['sample'] is the protein/sample name
+    - data['chip_name'] is the chip namethe filename of the file that triggered the flow.
+    - data['run_num'] is the beamline run associated with this sample.
+    """
     import re
     import os
     import json
     import shutil
     import glob
 
-    trigger_name = data['trigger_name']
     data_dir = data['data_dir']
     proc_dir = data['proc_dir']
     upload_dir = data['upload_dir']
+
+    trigger_name = data['trigger_name']
 
     ##experiment information
     run_name = data['exp']
@@ -112,24 +127,26 @@ def ssx_gather_data(**data):
     'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'}
 })
 class SSXGatherData(GladierBaseTool):
-
-    flow_input = {
-        'metadata': {
-            "description": "Automated data processing.",
-            "creators": [{"creatorName": "Kanzus"}],
-            "publisher": "Automate",
-            "subjects": [{"subject": "SSX"}],
-            "publicationYear": '2021',
-        }
-    }
-
+    # flow_input = {
+    #     'metadata': {
+    #         "description": "Automated data processing.",
+    #         "creators": [{"creatorName": "Kanzus"}],
+    #         "publisher": "Automate",
+    #         "subjects": [{"subject": "SSX"}],
+    #         "publicationYear": '2021',
+    #     }
+    # }
     required_input = [
         'trigger_name',
         'proc_dir',
+        'data_dir',
         'upload_dir',
+        'exp',
+        'sample',
+        'chip_name',
+        'run_num',
         'funcx_endpoint_non_compute',
     ]
-
     funcx_functions = [
         ssx_gather_data
     ]

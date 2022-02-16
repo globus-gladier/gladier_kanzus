@@ -4,12 +4,21 @@ def dials_prime(**data):
     """Run the PRIME tool on the int-list.
     - Change dir to the <exp>_prime directory
     - Create phil file for prime.run
-    - Call prime.run and pipe the log into a file using the input_range
-    - cp the prime's log into the images dir
-    - zip the prime dir and copy that into the images dir"""
+    - Call prime.run with the current list of ints generated
+    - (not implemented) cp the prime's log into the images dir
+    - (not implemented) zip the prime dir and copy that into the images dir
+    Variables:
+    - data['proc_dir'] is the path to where dials will run and save results
+    - data['prime_dir'] is the path to the folder which prime will run and save results
+    - data['exp'] is the experiment name
+    - data['run_num'] is the beamline run associated with this sample.
+    Optional Variables:
+    - data['unit_cell'] sets a new unit cell into the prime-phil
+    - data['prime_dmin'] sets the dmin value different than 2.1
+    - data['dials_path'] can be set for different installations (the container always have a link at '/')
+    """
     import os
     import json
-    import shutil
     import subprocess
     from subprocess import PIPE
     from string import Template
@@ -128,6 +137,14 @@ n_bins = 20""")
 
 @generate_flow_definition
 class Prime(GladierBaseTool):
+    flow_input = {}
+    required_input = [
+        'proc_dir',
+        'prime_dir',
+        'run_num',
+        'exp',
+        'funcx_endpoint_compute',
+    ]
     funcx_functions = [
         dials_prime
     ]
