@@ -12,18 +12,19 @@ class KanzusTriggers:
         self.folder_path = folder_path
 
     def run(self):
-        print("Kanzus Triggers Started")
+        print("Kanzus Client Started")
         if not os.path.isdir(self.folder_path):
-            print("Monitor dir does not exist.")
-            print("Dir " + self.folder_path + " was created")
+            print("  Monitor dir does not exist.")
+            print("  Dir " + self.folder_path + " was created")
             os.mkdir(self.folder_path)
-            
+        
+
+        os.chdir(self.folder_path)
         print("Monitoring: " + self.folder_path)
         print('')
 
         event_handler = Handler()
         self.observer.schedule(event_handler, self.folder_path, recursive = True)
-        
         self.observer.start()
         
         try:
@@ -50,6 +51,7 @@ class Handler(FileSystemEventHandler):
             return None
 
 def parse_cbf_event(event_file):
+    #Creates payload based on cbf file names
     event = {}
     event['exp'] = event_file.split('/')[-4]
     event['sample'] = event_file.split('/')[-3]
@@ -64,13 +66,20 @@ def parse_cbf_event(event_file):
     return event
 
 def parse_int_event(event_file):
+    #Creates payload based on int_list event.
     event = {}
     return event
 
 def KanzusLogic(event_file):
+    ##Parses each event and checks if it is a cbf file or int_list file
+    ##Each event updates the global base_input that is used for triggering the flows.
 
     if '.cbf' in event_file:
         event = parse_cbf_event(event_file)
+
+        #check if event is valid
+        if event['cbf_num']==None:
+            pass
 
         # LOCAL processing dirs
         exp_path = base_input["input"]["base_local_dir"]
@@ -99,7 +108,13 @@ def KanzusLogic(event_file):
         base_input['input']['tar_output'] = os.path.join(base_input["input"]["upload_dir"],'ints.tar.gz')
 
 
-        if event['cbf_num'] % n_batch_transfer == 0 or event['cbf_num'] == n_initial_transfer:
+        ##Basic trigger structure
+        ## each line checks if some variable (cbf_num) extracted from the event name matches
+        ## each flow have the exact same structure and receives the same payload created by the event_parser
+        if event['cbf_num'] == 512:
+            start_transfer_flow(event)
+
+        if event['cbf_num'] % n_batch_transfer == 0:
             start_transfer_flow(event)
 
         if event['cbf_num'] % n_batch_stills == 0:
@@ -111,45 +126,42 @@ def KanzusLogic(event_file):
         if event['cbf_num'] % n_batch_prime == 0:
             start_prime_flow(event)
 
+    ## future implementetation of the prime trigger based on # of ints
     if 'int_list.txt' in event_file:
        event = parse_int_event(event_file)
        
        if event['total_ints'] % n_batch_prime == 0:
            start_prime_flow(event)
 
-
+    ###Standard structure to run a flow. 
+    # It receives a parsed event
+    # creates a label based on the event
+    # run flow based on the created payload
+    # prints the url for records.
 def start_transfer_flow(event):
-    ###RunFlow
     label = 'SSX_Transfer_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
     print(label)
     print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-    ###
 
 def start_stills_flow(event):
-    ###RunFlow
     label = 'SSX_Stills_{}_{}'.format(event['chip_name'],event['cbf_num'])
-    flow = stills_flow.run_flow(flow_input=flow_input, label=label)
+    flow = stills_flow.run_flow(flow_input=base_input, label=label)
     print(label)
     print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-    ###
 
 
 def start_publish_flow(event):
-    ###RunFlow
-    label = f'SSX_Plot_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    label = 'SSX_Plot_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = publish_flow.run_flow(flow_input=base_input,label=label)
     print(label)
     print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-    ###
 
 def start_prime_flow(event):                                   
-    ###RunFlow
     label = 'SSX_Prime_{}_{}'.format(event['chip_name'],event['cbf_num'])                                                                                                                                    
     flow = prime_flow.run_flow(flow_input=base_input, label=label)
     print(label)
     print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-    ###
 
 # Arg Parsing
 def parse_args():
@@ -175,43 +187,56 @@ if __name__ == '__main__':
 
     args = parse_args()
 
+    # Experiment paths
+    # localdir should match the beamline S# path where data will be acquired
+    # data_dir sets where data will be transfered and processed at the computing resource 
     local_dir = args.localdir
     data_dir = args.datadir
 
-    n_initial_transfer = 512
-    n_batch_transfer = 2048
-    n_batch_stills = 512
-    n_batch_publish =  2048
-    n_batch_prime =  2000
 
+    # Basic triggers for each flow based on the cbf_num of each file acquired
+    # Current logic will trigger each flow at multiples of this variables 
+    ##
+    n_batch_transfer = 2048
+    data_transfer_flow = TransferFlow()
+    ##    
+    n_batch_stills = 512
+    stills_flow = StillsFlow()
+    ##
+    n_batch_publish =  2048
+    publish_flow = PublishFlow()
+    ##
+    n_batch_prime =  2000
+    prime_flow = PrimeFlow()
+
+    # Sets used deployment
     depl = deployment_map.get(args.deployment)
     if not depl:
         raise ValueError(f'Invalid Deployment, deployments available: {list(deployment_map.keys())}')
 
     depl_input = depl.get_input()
 
+    # Base input for the flow
     base_input = {
         "input": {
             #Processing variables
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
+            
+            # globus local endpoint
+            "globus_local_ep": depl_input['input']['beamline_globus_ep'],
+
+            # globus endpoint and mount point for remote resource
+            "globus_dest_ep": depl_input['input']['theta_globus_ep'], 
+    	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
+
             # funcX endpoints
             'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
             'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
-            # globus endpoints
-            "globus_local_ep": depl_input['input']['beamline_globus_ep'],
-            "globus_dest_ep": depl_input['input']['theta_globus_ep'], 
-    	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
         }
     }
 
-    data_transfer_flow = TransferFlow()
-    stills_flow = StillsFlow()
-    prime_flow = PrimeFlow()
-    publish_flow = PublishFlow()
-
-    os.chdir(local_dir)
-
+    ##Creates and starts the watcher
     exp = KanzusTriggers(local_dir)
     exp.run()
 
