@@ -1,10 +1,10 @@
 #!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
 
-import pathlib
 import time, argparse, os
 from watchdog.observers import Observer
 #from watchdog.observers.polling import PollingObserver as Observer
 from watchdog.events import FileSystemEventHandler
+import gladier_kanzus.logging  # noqa
 
 class KanzusTriggers:
     def __init__(self, folder_path):
@@ -39,11 +39,11 @@ class KanzusTriggers:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_any_event(event):
-        print(event)
+#        print(event)
         if event.is_directory:
             return None
         elif event.event_type == 'created':
-            KanzusLogic(event.src_path)
+            #KanzusLogic(event.src_path)
             return None
         elif event.event_type == 'modified':
             KanzusLogic(event.src_path)
@@ -68,45 +68,95 @@ def parse_int_event(event_file):
     return event
 
 def KanzusLogic(event_file):
-    print(event_file)
 
     if '.cbf' in event_file:
         event = parse_cbf_event(event_file)
-        #print(event)
 
-    #    # LOCAL processing dirs
-    #    exp_path = base_input["input"]["base_local_dir"]
-    #    local_dir = os.path.join(exp_path, event['sample'], event['chip_letter'])
-        base_input["input"]["local_dir"] = os.path.dirname(event_file)
-    #    base_input["input"]["local_proc_dir"] = local_dir + '_proc'
-    #    base_input["input"]["local_prime_dir"] = os.path.join(exp_path, sample, chip_name) + '_images'
-    #    base_input["input"]["local_images_dir"] = os.path.join(exp_path, sample, chip_name) + '_images'
+        # LOCAL processing dirs
+        exp_path = base_input["input"]["base_local_dir"]
+        local_dir = os.path.join(exp_path, event['sample'], event['chip_letter'])
+        base_input["input"]["local_dir"] = local_dir
+        base_input["input"]["local_proc_dir"] = local_dir + '_proc'
+        base_input["input"]["local_prime_dir"] = local_dir + '_prime'
+        base_input["input"]["local_images_dir"] = os.path.join(exp_path, event['sample'], event['chip_name']) + '_images'
 
         # REMOTE processing dirs
         data_dir = os.path.join(base_input["input"]["base_data_dir"], event['sample'], event['chip_letter'])
         base_input["input"]["data_dir"] = data_dir
         base_input["input"]["proc_dir"] = data_dir + '_proc'
         base_input["input"]["prime_dir"] = data_dir + '_prime'
-        base_input["input"]["upload_dir"] = os.path.join(base_input["input"]["base_data_dir"],  event['sample'], event['chip_letter']) + '_images' 
+        base_input["input"]["upload_dir"] = os.path.join(base_input["input"]["base_data_dir"],  event['sample'], event['chip_name']) + '_images' 
         base_input["input"]["trigger_name"] = event_file
         base_input["input"]['exp'] = event['exp']
         base_input["input"]['sample'] = event['sample']
         base_input["input"]['chip_letter'] = event['chip_letter']
         base_input["input"]['filename'] = event['filename']
         base_input["input"]['chip_name'] = event['chip_name']
+        base_input["input"]['cbf_num'] = event['cbf_num']
         base_input["input"]['run_num'] = event['run_num']
-        base_input["input"]['batch_stills'] = n_batch_stills
+        base_input["input"]['stills_batch_size'] = n_batch_stills
+        base_input['input']['tar_input'] = base_input["input"]["proc_dir"] ##Something funky here 
+        base_input['input']['tar_output'] = os.path.join(base_input["input"]["upload_dir"],'ints.tar.gz')
 
 
-    
+        if event['cbf_num'] % n_batch_transfer == 0 or event['cbf_num'] == n_initial_transfer:
+            start_transfer_flow(event)
 
+        if event['cbf_num'] % n_batch_stills == 0:
+            start_stills_flow(event)
+
+        if event['cbf_num'] % n_batch_publish == 0:
+            start_publish_flow(event)
+
+        if event['cbf_num'] % n_batch_prime == 0:
+            start_prime_flow(event)
+
+    if 'int_list.txt' in event_file:
+       event = parse_int_event(event_file)
+       
+       if event['total_ints'] % n_batch_prime == 0:
+           start_prime_flow(event)
+
+
+def start_transfer_flow(event):
+    ###RunFlow
+    label = 'SSX_Transfer_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
+
+def start_stills_flow(event):
+    ###RunFlow
+    label = 'SSX_Stills_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    flow = stills_flow.run_flow(flow_input=flow_input, label=label)
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
+
+
+def start_publish_flow(event):
+    ###RunFlow
+    label = f'SSX_Plot_{}_{}'.format(event['chip_name'],event['cbf_num'])
+    flow = publish_flow.run_flow(flow_input=base_input,label=label)
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
+
+def start_prime_flow(event):                                   
+    ###RunFlow
+    label = 'SSX_Prime_{}_{}'.format(event['chip_name'],event['cbf_num'])                                                                                                                                    
+    flow = prime_flow.run_flow(flow_input=base_input, label=label)
+    print(label)
+    print("URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+    ###
 
 # Arg Parsing
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
-        default='/APSDataAnalysis/SSX/random_start')
+        default='/eagle/APSDataAnalysis/SSX/random_start')
     parser.add_argument('--deployment','-d', default='raf-prod', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
     return parser.parse_args()
 
@@ -114,7 +164,9 @@ def parse_args():
 from gladier_kanzus.deployments import deployment_map
 
 ##Import relevant flows
+from gladier_kanzus.flows import TransferFlow
 from gladier_kanzus.flows import StillsFlow
+from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
 
 
@@ -126,14 +178,11 @@ if __name__ == '__main__':
     local_dir = args.localdir
     data_dir = args.datadir
 
-    # triggers for data transfer BEAMLINE >> THETA
+    n_initial_transfer = 512
     n_batch_transfer = 2048
-    # triggers for stills batch procces (THETA)
-    n_batch_stills = 256
-    # triggers for prime batch procces (THETA)
-    n_batch_plot =  2048
-    # triggers for prime batch procces (THETA)
-    n_batch_prime =  10000
+    n_batch_stills = 512
+    n_batch_publish =  2048
+    n_batch_prime =  2000
 
     depl = deployment_map.get(args.deployment)
     if not depl:
@@ -141,25 +190,25 @@ if __name__ == '__main__':
 
     depl_input = depl.get_input()
 
-
     base_input = {
         "input": {
             #Processing variables
             "base_local_dir": local_dir,
             "base_data_dir": data_dir,
-
             # funcX endpoints
             'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
             'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
-
             # globus endpoints
             "globus_local_ep": depl_input['input']['beamline_globus_ep'],
-            "globus_dest_ep": depl_input['input']['eagle_globus_ep'], 
-	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
-    
+            "globus_dest_ep": depl_input['input']['theta_globus_ep'], 
+    	    "globus_dest_mount" : depl_input['input']['ssx_eagle_mount'],
         }
     }
 
+    data_transfer_flow = TransferFlow()
+    stills_flow = StillsFlow()
+    prime_flow = PrimeFlow()
+    publish_flow = PublishFlow()
 
     os.chdir(local_dir)
 
