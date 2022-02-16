@@ -1,5 +1,5 @@
 from gladier import GladierBaseClient, generate_flow_definition, utils
-from gladier_kanzus.flows.flow_base import BaseClient
+from gladier_kanzus.flows.base_flow import BaseClient
 
 from gladier_kanzus.tools.prime import dials_prime
 

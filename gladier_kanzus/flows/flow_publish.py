@@ -1,5 +1,5 @@
 from gladier import generate_flow_definition
-from gladier_kanzus.flows.flow_base import BaseClient
+from gladier_kanzus.flows.base_flow import BaseClient
 
 
 @generate_flow_definition(modifiers={
