@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('dirname', type=str, default='.')
     parser.add_argument('--mult','-m', type=int, default=512)
-    parser.add_argument('--time','-t', type=int, default=1)
+    parser.add_argument('--time','-t', type=float, default=1.)
     return parser.parse_args()
 
 
