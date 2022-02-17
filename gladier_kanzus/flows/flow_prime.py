@@ -1,7 +1,7 @@
 from gladier import GladierBaseClient, generate_flow_definition, utils
 from gladier_kanzus.flows.base_flow import BaseClient
 
-from gladier_kanzus.tools.prime import dials_prime
+from gladier_kanzus.tools.dials_prime import dials_prime
 
 
 @generate_flow_definition
@@ -16,7 +16,7 @@ class PrimeFlow(BaseClient):
     }
     
     gladier_tools = [
-        'gladier_kanzus.tools.Prime',
+        'gladier_kanzus.tools.DialsPrime',
         'gladier_kanzus.tools.TransferPrime',
     ]
     

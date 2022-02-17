@@ -68,7 +68,7 @@ class SSXPlot(GladierBaseTool):
         'data_dir',
         'proc_dir',
         'upload_dir',
-        'run_num'
+        'run_num',
         'funcx_endpoint_non_compute',
     ]
 
