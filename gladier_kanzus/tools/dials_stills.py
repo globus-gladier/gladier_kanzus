@@ -54,7 +54,7 @@ class DialsStills(GladierBaseTool):
         'run_num',
         'chip_name',
         'cbf_num',
-        'stills_batch_size'
+        'stills_batch_size',
         'funcx_endpoint_compute',
     ]
     funcx_functions = [dials_stills]

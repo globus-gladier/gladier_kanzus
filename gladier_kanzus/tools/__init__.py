@@ -8,7 +8,7 @@ from .wait_trigger import WaitTrigger
 from .create_phil import CreatePhil
 from .dials_stills import DialsStills
 
-from .prime import Prime
+from .dials_prime import DialsPrime
 
 from .plot import SSXPlot
 from .gather_data import SSXGatherData
@@ -18,7 +18,7 @@ from .xy_plot import XYPlot
 
 __all__ = ['CreatePhil',
         'DialsStills',
-        'Prime',
+        'DialsPrime',
         'SSXGatherData',
         'SSXPlot',
         'SSXPublish', 
