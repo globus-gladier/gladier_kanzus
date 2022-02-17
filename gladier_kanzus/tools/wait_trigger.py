@@ -22,7 +22,7 @@ def wait_trigger_file(**data):
     return trigger_file
 
 @generate_flow_definition(modifiers={
-    'wait_trigger_file': {'endpoint': 'funcx_endpoint_non_compute'}
+    'wait_trigger_file': {'endpoint': 'funcx_endpoint_non_compute','WaitTime':1200}
 })
 class WaitTrigger(GladierBaseTool):
     flow_input = {}
