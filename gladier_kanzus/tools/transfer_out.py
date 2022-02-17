@@ -18,7 +18,7 @@ class TransferOut(GladierBaseTool):
         "sync_level": 1,
         "transfer_items": [
           {
-            "source_path.$": "$.input.local_dir",
+            "source_path.$": "$.input.local_data_dir",
             "destination_path.$": "$.input.data_dir",
             "recursive": True
           }

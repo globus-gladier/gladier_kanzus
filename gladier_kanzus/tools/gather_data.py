@@ -63,8 +63,9 @@ def ssx_gather_data(**data):
     
     if len(cbf_indices) == 0:
         cbf_indices.append(0)
-   
-    proc_cbf_file = os.path.join(proc_dir,'proc_cbf.txt')
+  
+    proc_cbf_name = '{}_{}_proc_cbf.txt'.format(chip_name,run_num)
+    proc_cbf_file = os.path.join(proc_dir,proc_cbf_name)
     
     if os.path.exists(proc_cbf_file):
         os.remove(proc_cbf_file)
@@ -73,7 +74,8 @@ def ssx_gather_data(**data):
         for cbf in sorted(cbf_indices):
             f.write(str(cbf) + "\n")
 
-    proc_ints_file = os.path.join(proc_dir,'proc_ints.txt')
+    proc_ints_name = '{}_{}_proc_ints.txt'.format(chip_name,run_num)
+    proc_ints_file = os.path.join(proc_dir,proc_ints_name)
     
     if os.path.exists(proc_ints_file):
         os.remove(proc_ints_file)

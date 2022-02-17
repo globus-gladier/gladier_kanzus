@@ -35,8 +35,11 @@ def dials_prime(**data):
 
     int_filenames =  sorted(glob.glob(os.path.join(proc_dir,'int-*.pickle')))
 
-    if len(int_filenames)==0:
-        return 'no ints'
+    try:
+        len(int_filenames)>0
+    except:
+        Error('No ints were found')
+        
 
     if not os.path.exists(prime_dir):
                 os.mkdir(prime_dir)
