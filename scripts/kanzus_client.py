@@ -107,7 +107,6 @@ def KanzusLogic(event_file):
         base_input['input']['tar_input'] = base_input["input"]["proc_dir"] ##Something funky here 
         base_input['input']['tar_output'] = os.path.join(base_input["input"]["upload_dir"],'ints.tar.gz')
 
-
         ##Basic trigger structure
         ## each line checks if some variable (cbf_num) extracted from the event name matches
         ## each flow have the exact same structure and receives the same payload created by the event_parser
@@ -233,6 +232,15 @@ if __name__ == '__main__':
             # funcX endpoints
             'funcx_endpoint_non_compute': depl_input['input']['funcx_endpoint_non_compute'],
             'funcx_endpoint_compute': depl_input['input']['funcx_endpoint_compute'],
+
+            # Publication index and project
+            ## maybe this should go to deployments.
+            'search_index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
+            'search_project': 'ssx',
+            'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
+            # Extra groups can be specified here. The SSX Admin group will always
+            # be provided automatically.
+            'groups': []
         }
     }
 

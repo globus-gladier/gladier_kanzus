@@ -96,14 +96,11 @@ def ssx_gather_data(**data):
     protein = user_input.get('protein_name', protein)
 
     metadata = {
-        # This is the directory which will be published
         'dataset': data['upload_dir'],
-        'index': '5e63bb08-5b39-4a02-86f3-44cec03e8bc0',
-        'project': 'ssx',
-        'source_globus_endpoint': '08925f04-569f-11e7-bef8-22000b9a448b',
-        # Extra groups can be specified here. The SSX Admin group will always
-        # be provided automatically.
-        'groups': [],    }
+        'index': data['search_index'],
+        'project': data['search_project'],
+        'source_globus_endpoint': data['source_globus_endpoint'], ##Review this later
+        'groups': data.get('groups',[]),    }
 
     # Update any metadata in the pilot 'metadata' key
     metadata = data['pilot'].get('metadata', {})
@@ -127,15 +124,6 @@ def ssx_gather_data(**data):
     'ssx_gather_data': {'endpoint': 'funcx_endpoint_non_compute'}
 })
 class SSXGatherData(GladierBaseTool):
-    # flow_input = {
-    #     'metadata': {
-    #         "description": "Automated data processing.",
-    #         "creators": [{"creatorName": "Kanzus"}],
-    #         "publisher": "Automate",
-    #         "subjects": [{"subject": "SSX"}],
-    #         "publicationYear": '2021',
-    #     }
-    # }
     required_input = [
         'trigger_name',
         'proc_dir',
