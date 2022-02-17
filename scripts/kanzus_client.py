@@ -106,6 +106,7 @@ def KanzusLogic(event_file):
         base_input["input"]['stills_batch_size'] = n_batch_stills
         base_input['input']['tar_input'] = base_input["input"]["proc_dir"] ##Something funky here 
         base_input['input']['tar_output'] = os.path.join(base_input["input"]["upload_dir"],'ints.tar.gz')
+        base_input['input']['pilot'] = {}
 
         ##Basic trigger structure
         ## each line checks if some variable (cbf_num) extracted from the event name matches

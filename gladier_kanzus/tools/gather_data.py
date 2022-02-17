@@ -95,12 +95,11 @@ def ssx_gather_data(**data):
     user_input = beamline_metadata.get('user_input', {})
     protein = user_input.get('protein_name', protein)
 
-    metadata = {
-        'dataset': data['upload_dir'],
-        'index': data['search_index'],
-        'project': data['search_project'],
-        'source_globus_endpoint': data['source_globus_endpoint'], ##Review this later
-        'groups': data.get('groups',[]),    }
+    data['pilot']['dataset'] = data['upload_dir']
+    data['pilot']['index'] = data['search_index']
+    data['pilot']['project'] = data['search_project']
+    data['pilot']['source_globus_endpoint'] = data['source_globus_endpoint'] ##Review this later
+    data['pilot']['groups'] = data.get('groups',[])
 
     # Update any metadata in the pilot 'metadata' key
     metadata = data['pilot'].get('metadata', {})
