@@ -141,7 +141,7 @@ n_bins = 20""")
 
 
 @generate_flow_definition
-class Prime(GladierBaseTool):
+class DialsPrime(GladierBaseTool):
     flow_input = {}
     required_input = [
         'proc_dir',
