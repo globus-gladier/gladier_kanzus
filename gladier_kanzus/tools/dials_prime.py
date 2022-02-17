@@ -10,7 +10,7 @@ def dials_prime(**data):
     Variables:
     - data['proc_dir'] is the path to where dials will run and save results
     - data['prime_dir'] is the path to the folder which prime will run and save results
-    - data['exp'] is the experiment name
+    - data['chip_name'] is the current chip name
     - data['run_num'] is the beamline run associated with this sample.
     Optional Variables:
     - data['unit_cell'] sets a new unit cell into the prime-phil
@@ -28,7 +28,7 @@ def dials_prime(**data):
     prime_dir = data['prime_dir']
 
     run_num = data['run_num']
-    exp_name = data['exp']
+    chip_name = data['chip_name']
     
     unit_cell = data.get('unit_cell', None)
     dmin = data.get('prime_dmin', 2.1)
@@ -41,7 +41,8 @@ def dials_prime(**data):
     if not os.path.exists(prime_dir):
                 os.mkdir(prime_dir)
 
-    proc_ints_file = os.path.join(prime_dir,'proc_ints.txt')
+    int_file_name = chip_name + '_' + str(len(int_filenames)) + '_ints.txt'
+    proc_ints_file = os.path.join(prime_dir,int_file_name)
 
     if os.path.exists(proc_ints_file):
         os.remove(proc_ints_file)
@@ -51,7 +52,7 @@ def dials_prime(**data):
             f.write(str(intfile) + "\n")
 
     
-    prime_run_name = exp_name + '_prime_' + str(len(int_filenames))
+    prime_run_name = chip_name + '_' + str(len(int_filenames)) + '_prime'
     
     os.chdir(prime_dir)
 
@@ -124,13 +125,14 @@ n_bins = 20""")
 
     prime_data = template_prime.substitute(template_data)
 
-    with open('prime.phil', 'w') as fp:
+    prime_phil =     prime_run_name = chip_name + '_' + str(len(int_filenames)) + '_prime.phil'
+    with open(prime_phil, 'w') as fp:
         fp.write(prime_data)
 
     # run prime
     timeout = data.get('timeout', 1200)
     dials_path = data.get('dials_path','')
-    cmd = f"source {dials_path}/dials_env.sh && timeout {timeout} prime.run prime.phil"
+    cmd = f"source {dials_path}/dials_env.sh && timeout {timeout} prime.run {prime_phil}"
 
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=True, executable='/bin/bash')
