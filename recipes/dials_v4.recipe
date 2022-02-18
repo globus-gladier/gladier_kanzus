@@ -1,0 +1,11 @@
+Bootstrap: docker
+From: dials/dials:latest
+
+
+
+%post
+  source /dials/dials 
+  pip install funcx
+  pip install funcx-endpoint
+  pip install numpy matplotlib
+    

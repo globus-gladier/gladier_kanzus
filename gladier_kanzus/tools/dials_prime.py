@@ -37,18 +37,18 @@ def dials_prime(**data):
 
     try:
         len(int_filenames)>0
-    except:
-        Error('No ints were found')
+    except RuntimeError:
+        print('No ints were found')
         
 
     if not os.path.exists(prime_dir):
-                os.mkdir(prime_dir)
+        os.mkdir(prime_dir)
 
     int_file_name = chip_name + '_' + str(len(int_filenames)) + '_ints.txt'
     proc_ints_file = os.path.join(prime_dir,int_file_name)
 
     if os.path.exists(proc_ints_file):
-        os.remove(proc_ints_file)
+        raise RuntimeError('Prime already running with this values.')
 
     with open(proc_ints_file,'w+') as f:
         for intfile in sorted(int_filenames):
@@ -79,6 +79,7 @@ def dials_prime(**data):
 
     template_prime = Template("""data = $int_file 
 run_no = $run_name
+title = None
 target_unit_cell = $unit_cell
 target_space_group = P3121
 n_residues = 415 
@@ -121,10 +122,11 @@ indexing_ambiguity {
          d_max = 10.0
          sigma_min = 1.5
          n_sample_frames = 1000
-         #n_sample_frames = 200
          n_selected_frames = 100
 }
-n_bins = 20""")
+n_processors = 32
+n_bins = 20
+""")
 
     prime_data = template_prime.substitute(template_data)
 
@@ -134,8 +136,8 @@ n_bins = 20""")
 
     # run prime
     timeout = data.get('timeout', 1200)
-    dials_path = data.get('dials_path','')
-    cmd = f"source {dials_path}/dials_env.sh && timeout {timeout} prime.run {prime_phil}"
+    dials_path = data.get('dials_path','dials')
+    cmd = f"source {dials_path}/dials && timeout {timeout} prime.run {prime_phil}"
 
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=True, executable='/bin/bash')

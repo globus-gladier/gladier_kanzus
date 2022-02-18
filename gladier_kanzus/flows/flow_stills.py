@@ -14,7 +14,7 @@ class StillsFlow(BaseClient):
     containers = {
         utils.name_generation.get_funcx_function_name(dials_stills): {
             'container_type': 'singularity',
-            'location': '/eagle/APSDataAnalysis/SSX/containers/dials_v3.simg',
+            'location': '/eagle/APSDataAnalysis/SSX/containers/dials_v4.simg',
         }
     }
     

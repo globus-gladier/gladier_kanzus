@@ -33,8 +33,8 @@ def dials_stills(**data):
 
     logname = 'log-' + data['filename'].replace('.cbf','')
     
-    dials_path = data.get('dials_path','')
-    cmd = f'source {dials_path}/dials_env.sh && timeout {timeout} dials.stills_process {phil_name} {data_dir}/{input_files} > {logname}.txt'
+    dials_path = data.get('dials_path','dials')
+    cmd = f'source {dials_path}/dials && timeout {timeout} dials.stills_process {phil_name} {data_dir}/{input_files} > {logname}.txt'
 
     os.chdir(proc_dir) 
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

@@ -11,7 +11,7 @@ class PrimeFlow(BaseClient):
     containers = {
             utils.name_generation.get_funcx_function_name(dials_prime): {
                 'container_type': 'singularity',
-                'location': '/eagle/APSDataAnalysis/SSX/containers/dials_v3.simg',
+                'location': '/eagle/APSDataAnalysis/SSX/containers/dials_v4.simg',
         }
     }
     
