@@ -24,6 +24,7 @@ def dials_prime(**data):
     from string import Template
     import glob 
 
+    data_dir = data['data_dir']
     proc_dir = data['proc_dir']
     prime_dir = data['prime_dir']
 
@@ -58,14 +59,18 @@ def dials_prime(**data):
     prime_run_name = chip_name + '_' + str(len(int_filenames)) + '_prime'
     
     os.chdir(prime_dir)
+    beamline_json = os.path.join(data_dir,f"beamline_run{run_num}.json")
+    beamline_data = None 
 
     try:
-        beamline_json = f"beamline_run{run_num}.json"
         with open(beamline_json, 'r') as fp:
             beamline_data = json.loads(fp.read())
+
         if not unit_cell:
             unit_cell = beamline_data['user_input']['unit_cell']
+        
         unit_cell = unit_cell.replace(",", " ")
+        space_group = beamline_data['user_input']['space_group']
     except:
         pass
 
@@ -74,14 +79,17 @@ def dials_prime(**data):
 
     os.chdir(prime_dir)
 
-    template_data = {"dmin": dmin, "int_file": proc_ints_file, "unit_cell": unit_cell,
-                     "run_name": prime_run_name}
+    template_data = {"dmin": dmin, 
+            "int_file": proc_ints_file, 
+            "unit_cell": unit_cell,
+            "space_group": space_group, 
+            "run_name": prime_run_name}
 
     template_prime = Template("""data = $int_file 
 run_no = $run_name
 title = None
 target_unit_cell = $unit_cell
-target_space_group = P3121
+target_space_group = $space_group
 n_residues = 415 
 pixel_size_mm = 0.172
 #This is so you can use prime.viewstats
@@ -136,7 +144,7 @@ n_bins = 20
 
     # run prime
     timeout = data.get('timeout', 1200)
-    dials_path = data.get('dials_path','dials')
+    dials_path = data.get('dials_path','/dials')
     cmd = f"source {dials_path}/dials && timeout {timeout} prime.run {prime_phil}"
 
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -145,7 +153,9 @@ n_bins = 20
     return cmd, str(res.stdout), str(res.stderr)
 
 
-@generate_flow_definition
+@generate_flow_definition(modifiers={
+    'dials_prime': {'WaitTime':7200,'ExceptionOnActionFailure': True}
+})
 class DialsPrime(GladierBaseTool):
     flow_input = {}
     required_input = [

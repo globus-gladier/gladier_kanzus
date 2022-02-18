@@ -16,13 +16,13 @@ def wait_trigger_file(**data):
     trigger_file = os.path.join(data_dir,filename)
     beamline_json = os.path.join(data_dir,f"beamline_run{run_num}.json")
 
-    while not os.path.exists(trigger_file) and not os.path.exists(beamline_json):
+    while os.path.exists(trigger_file)==False or os.path.exists(beamline_json)==False:
         time.sleep(1)
         
     return trigger_file
 
 @generate_flow_definition(modifiers={
-    'wait_trigger_file': {'endpoint': 'funcx_endpoint_non_compute','WaitTime':1200}
+    'wait_trigger_file': {'endpoint': 'funcx_endpoint_non_compute','WaitTime':7200}
 })
 class WaitTrigger(GladierBaseTool):
     flow_input = {}
