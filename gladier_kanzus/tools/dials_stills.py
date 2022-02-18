@@ -24,7 +24,7 @@ def dials_stills(**data):
 
     phil_name = f"{proc_dir}/process_{run_num}.phil"
 
-    cbf_start = cbf_num - batch_size
+    cbf_start = cbf_num - batch_size + 1
     cbf_end = cbf_num
 
     input_files = f"{chip_name}_{run_num}_{{{str(cbf_start).zfill(5)}..{str(cbf_end).zfill(5)}}}.cbf"
@@ -33,7 +33,7 @@ def dials_stills(**data):
 
     logname = 'log-' + data['filename'].replace('.cbf','')
     
-    dials_path = data.get('dials_path','dials')
+    dials_path = data.get('dials_path','/dials')
     cmd = f'source {dials_path}/dials && timeout {timeout} dials.stills_process {phil_name} {data_dir}/{input_files} > {logname}.txt'
 
     os.chdir(proc_dir) 
