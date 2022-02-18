@@ -1,11 +1,15 @@
 Bootstrap: docker
 From: dials/dials:latest
 
-
+%environment
+    PATH="/dials/conda_base/bin:$PATH"
 
 %post
   source /dials/dials 
   pip install funcx
   pip install funcx-endpoint
   pip install numpy matplotlib
+#  conda init
+
+#  echo "source /dials/dials" >> ~/.bashrc 
     
