@@ -1,5 +1,6 @@
 #!/local/data/idsbc/idstaff/gladier/miniconda3/envs/gladier/bin/python
 
+from ssl import ALERT_DESCRIPTION_PROTOCOL_VERSION
 import time, argparse, os
 from watchdog.observers import Observer
 #from watchdog.observers.polling import PollingObserver as Observer
@@ -75,6 +76,7 @@ def parse_event(event_file):
     
     return event
 
+
 def KanzusLogic(event_file):
     ##Parses each event and checks if it is a cbf file or int_list file
     ##Each event updates the global base_input that is used for triggering the flows.
@@ -146,6 +148,8 @@ def KanzusLogic(event_file):
     # run flow based on the created payload
     # prints the url for records.
 
+
+    
 def start_transfer_flow(event):
     label = 'SSX_Transfer_{}_{}'.format(event['chip_name'],event['cbf_num'])
     flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)

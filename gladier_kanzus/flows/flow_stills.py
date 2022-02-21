@@ -22,10 +22,10 @@ class StillsFlow(BaseClient):
         # 'gladier_kanzus.tools.TransferOut',
         'gladier_kanzus.tools.WaitTrigger',
         'gladier_kanzus.tools.CreatePhil',
-        'gladier_kanzus.tools.DialsStills',
-        'gladier_kanzus.tools.SSXGatherData',
-        'gladier_kanzus.tools.SSXPlot',
-        'gladier_tools.publish.Publish',
-        'gladier_kanzus.tools.TransferProc'
+#        'gladier_kanzus.tools.DialsStills',
+#        'gladier_kanzus.tools.SSXGatherData',
+#        'gladier_kanzus.tools.SSXPlot',
+#        'gladier_tools.publish.Publish',
+#        'gladier_kanzus.tools.TransferProc'
         ]
 

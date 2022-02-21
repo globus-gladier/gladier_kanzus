@@ -387,10 +387,8 @@ def primalisys(**data):
 class Primalisys(GladierBaseTool):
     flow_input = {}
     required_input = [
-        'upload_dir',
         'prime_dir',
-        'run_num',
-        'exp',
+        'upload_dir',
         'funcx_endpoint_compute',
     ]
     funcx_functions = [

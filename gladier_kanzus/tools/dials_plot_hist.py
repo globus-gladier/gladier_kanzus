@@ -25,7 +25,7 @@ def dials_plot_hist(**data):
     return res.stdout, res.stderr
 
 @generate_flow_definition(modifiers={
-    'dials_stills': {'WaitTime':7200}
+    'dials_plot_hist': {'WaitTime':7200}
 })
 class DialsPlotHist(GladierBaseTool):
     flow_input = {}

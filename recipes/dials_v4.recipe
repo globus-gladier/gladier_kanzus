@@ -9,7 +9,7 @@ From: dials/dials:latest
   pip install funcx
   pip install funcx-endpoint
   pip install numpy matplotlib
-#  conda init
-
-#  echo "source /dials/dials" >> ~/.bashrc 
+  
+  conda init
+  echo "source /dials/dials" >> ~/.bashrc 
     
