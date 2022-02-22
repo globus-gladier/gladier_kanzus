@@ -83,7 +83,6 @@ mp.nproc = $nproc
 mp.method=multiprocessing
 output.composite_output=False
 refinement.parameterisation.detector.fix=none
-debug.output_debug_logs=False
 geometry {
   detector {
       panel {
@@ -109,7 +108,13 @@ indexing {
     return phil_name 
 
 @generate_flow_definition(modifiers={
+<<<<<<< HEAD
     'create_phil': {'endpoint': 'funcx_endpoint_non_compute'},
+=======
+    create_phil: {'endpoint': 'funcx_endpoint_non_compute',
+                           'ExceptionOnActionFailure': True,
+                           }
+>>>>>>> a409422929cdc8745661469eb40eed2fd1804637
 })
 class CreatePhil(GladierBaseTool):
     flow_input = {}
