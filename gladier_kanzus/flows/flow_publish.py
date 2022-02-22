@@ -4,12 +4,7 @@ from gladier_kanzus.flows.base_flow import BaseClient
 from gladier_kanzus.tools.dials_plot_hist import dials_plot_hist
 
 @generate_flow_definition(modifiers={
-<<<<<<< HEAD
     'tar': {'endpoint': 'funcx_endpoint_non_compute'},
-=======
-    'tar': {'endpoint': 'funcx_endpoint_non_compute', 'WaitTime': 3600},
-    'ssx_plot': {'payload': '$.SsxGatherData.details.result[0].plot'},
->>>>>>> a409422929cdc8745661469eb40eed2fd1804637
     'publish_gather_metadata': {'WaitTime': 240, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
 
