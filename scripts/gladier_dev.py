@@ -44,7 +44,7 @@ class Handler(FileSystemEventHandler):
         if event.is_directory:
             return None
         elif event.event_type == 'created':
-            KanzusLogic(event.src_path)
+            #KanzusLogic(event.src_path)
             return None
         elif event.event_type == 'modified':
             KanzusLogic(event.src_path)
@@ -111,36 +111,9 @@ def KanzusLogic(event_file):
             # start_prime_flow(event_file, cbf_num)   
 
 
-def start_transfer_flow(event_file, sample, chip_letter, cbf_num):
-    label = f'SSX_Transfer_{sample}_{chip_letter}_{cbf_num}'
-    flow = data_transfer_flow.run_flow(flow_input=base_input,label=label)
 
-    print('Transfer Flow')
-    print("  Local Trigger : " + event_file)
-    print("  UUID : " + flow['action_id'])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+def start_stills_flow(event):
 
-
-def start_stills_flow(event_file, sample, chip_letter, chip_name, run_num, cbf_num):
-    subranges = create_ranges(cbf_num - n_batch_stills, cbf_num, n_batch_stills)
-    new_range = subranges[0]
-    label = f'SSX_Stills_{sample}_{chip_letter}_{new_range}'
-
-    flow_input = base_input.copy()
-    flow_input["input"]["input_files"]=f"{chip_name}_{run_num}_{new_range}.cbf"
-    flow_input["input"]["input_range"]=new_range[1:-1]
-
-    flow = stills_flow.run_flow(flow_input=flow_input, label=label)
-
-    print('Stills Flow')
-    print("  Local Trigger : " + event_file)
-    print("  Range : " + base_input["input"]["input_range"])
-    print("  UUID : " + flow['action_id'])
-    print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
-
-
-def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
-    label = f'SSX_Plot_{sample}_{chip_letter}_{cbf_num}'
     flow_input = base_input.copy()
 
     flow_input['input']['tar_input'] = str(pathlib.Path(flow_input["input"]["upload_dir"]).parent / 'ints')
@@ -159,16 +132,14 @@ def start_plot_flow(event_file, sample, chip_letter, chip_name, cbf_num):
 
     flow = plot_flow.run_flow(flow_input=flow_input,label=label)
 
-    print('Plot and Publish Flow')
-    print("  Local Trigger : " + event_file)
+    print('Stills Flow')
+    print("  Local Trigger : " + base_input["input"]["trigger_name"])
     print("  UUID : " + flow['action_id'])
     print("  URL : https://app.globus.org/runs/" + flow['action_id'] + "\n")
+
+
  
-def start_prime_flow(event_file, cbf_num, cbf_base):
-    subranges = create_ranges(cbf_num-n_batch_stills, cbf_num, n_batch_stills)                      
-    new_range = subranges[0]                                                                        
-    base_input["input"]["input_files"]=f"{cbf_base}{new_range}.cbf"                                 
-    base_input["input"]["input_range"]=new_range[1:-1]                                              
+def start_prime_flow(event):
                                                                                                             
     label = f'SSX_Prime_{names[0]}_{new_range}'                                                    
                                                                                                             
@@ -223,7 +194,6 @@ from gladier_kanzus.deployments import deployment_map
 from gladier_kanzus.flows import TransferFlow
 from gladier_kanzus.flows import BlockTransferFlow
 from gladier_kanzus.flows import StillsFlow
-from gladier_kanzus.flows import PublishFlow
 from gladier_kanzus.flows import PrimeFlow
 
 
@@ -278,9 +248,7 @@ if __name__ == '__main__':
         }
     }
 
-    data_transfer_flow = TransferFlow()
     stills_flow = StillsFlow()
-    plot_flow = PublishFlow()
     prime_flow = PrimeFlow()
 
     os.chdir(local_dir)
