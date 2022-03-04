@@ -1,5 +1,5 @@
 from gladier import GladierBaseClient, generate_flow_definition, utils
-from gladier_kanzus.flows.base_flow import BaseClient
+from gladier_kanzus.flows.base_container_flow import ContainerBaseClient
 
 from gladier_kanzus.tools.dials_stills import dials_stills
 
@@ -8,7 +8,7 @@ from gladier_kanzus.tools.dials_stills import dials_stills
 @generate_flow_definition(modifiers={
     'publish_gather_metadata': {'WaitTime': 240, 'payload': '$.SsxGatherData.details.result[0].pilot'},
 })
-class StillsFlow(BaseClient):
+class StillsFlow(ContainerBaseClient):
     globus_group = 'e31ed13f-e9e0-11e9-bbd0-0a8c64af9bb2'
 
     containers = {

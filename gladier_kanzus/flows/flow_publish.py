@@ -1,5 +1,5 @@
 from gladier import generate_flow_definition, utils
-from gladier_kanzus.flows.base_flow import BaseClient
+from gladier_kanzus.flows.base_container_flow import ContainerBaseClient
 
 from gladier_kanzus.tools.dials_plot_hist import dials_plot_hist
 
@@ -9,7 +9,7 @@ from gladier_kanzus.tools.dials_plot_hist import dials_plot_hist
 })
 
 
-class PublishFlow(BaseClient):
+class PublishFlow(ContainerBaseClient):
     containers = {
             utils.name_generation.get_funcx_function_name(dials_plot_hist): {
                 'container_type': 'singularity',

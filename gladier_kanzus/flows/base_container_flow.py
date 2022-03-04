@@ -3,7 +3,7 @@ from gladier import GladierBaseClient, utils
 
 log = logging.getLogger(__name__)
 
-class BaseClient(GladierBaseClient):
+class ContainerBaseClient(GladierBaseClient):
     def register_funcx_function(self, function):
         """Register containers for any functions listed in self.containers"""
         fxid_name = utils.name_generation.get_funcx_function_name(function)

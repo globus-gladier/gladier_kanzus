@@ -91,7 +91,7 @@ def ssx_gather_data(**data):
         for cbf in sorted(cbf_indices):
             f.write(str(cbf) + "\n")
 
-    proc_ints_file = os.path.join(processing_dir,'proc_ints.txt')
+    proc_ints_file = os.path.join(proc_dir,'proc_ints.txt')
     
     if os.path.exists(proc_ints_file):
         os.remove(proc_ints_file)
