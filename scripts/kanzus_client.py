@@ -180,7 +180,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('localdir', type=str, default='.')
     parser.add_argument('--datadir', type=str, 
-        default='/eagle/APSDataAnalysis/SSX/random_start')
+        default='/eagle/APSDataAnalysis/SSX/test_flows/')
     parser.add_argument('--deployment','-d', default='raf-prod', help=f'Deployment configs. Available: {list(deployment_map.keys())}')
     return parser.parse_args()
 

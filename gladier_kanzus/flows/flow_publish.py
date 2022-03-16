@@ -18,9 +18,9 @@ class PublishFlow(ContainerBaseClient):
     }
     globus_group = 'e31ed13f-e9e0-11e9-bbd0-0a8c64af9bb2'
     gladier_tools = [
-        'gladier_kanzus.tools.gather_data.SSXGatherData',
+        'gladier_kanzus.tools.SSXGatherData',
         'gladier_tools.posix.tar.Tar',
-        'gladier_kanzus.tools.plot.SSXPlot',
-        'gladier_kanzus.tools.plot.DialsPlotHist',
+        'gladier_kanzus.tools.SSXPlot',
+        'gladier_kanzus.tools.DialsPlotHist',
         'gladier_tools.publish.Publish',
     ]
