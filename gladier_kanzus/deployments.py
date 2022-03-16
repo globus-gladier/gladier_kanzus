@@ -21,6 +21,19 @@ class BaseDeployment:
         'input': {}
     }
 
+class JimTest(BaseDeployment):
+    globus_endpoints = {
+        'beamline_globus_ep' : '08925f04-569f-11e7-bef8-22000b9a448b',
+        'eagle_globus_ep' : '05d2c76a-e867-4f67-aa57-76edeb0beda0',
+        'theta_globus_ep': '08925f04-569f-11e7-bef8-22000b9a448b',
+        'ssx_eagle_globus_ep' :'4340775f-4758-4fd6-a7b1-990f82aef5de',
+        'ssx_eagle_mount' : '/eagle/APSDataAnalysis/SSX/'
+    }
+    funcx_endpoints = {
+        'funcx_endpoint_non_compute' : 'e449e8b8-e114-4659-99af-a7de06feb847',
+        'funcx_endpoint_compute'     : '4c676cea-8382-4d5d-bc63-d6342bdb00ca'
+    }
+
 class RafProd(BaseDeployment):
     funcx_endpoints = {
         'funcx_endpoint_non_compute' : 'e449e8b8-e114-4659-99af-a7de06feb847',
@@ -47,4 +60,5 @@ deployment_map = {
     'raf-prod': RafProd(),
     'raf-polaris' : RafPolaris(),
     'ryan-prod': RyanProd(),
+    'jim-test': JimTest()
 }
